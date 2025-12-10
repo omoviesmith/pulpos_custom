@@ -1,0 +1,32 @@
+/* Top navbar */
+.navbar, .navbar-default {
+  background-color: #111111 !important;
+  border-color: #111111 !important;
+}
+
+/* Primary buttons */
+.btn-primary,
+.btn-primary:focus {
+  background-color: #FFCC00 !important;
+  border-color: #FFCC00 !important;
+  color: #000000 !important;
+}
+
+/* Links */
+a {
+  color: #FFCC00;
+}
+
+/* Section / list headers */
+.grid-heading-row,
+.form-section .section-head {
+  background-color: #FFCC00 !important;
+  color: #000000 !important;
+}
+
+/* Sidebar */
+.layout-side-section {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+}
+
