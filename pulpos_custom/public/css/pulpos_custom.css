@@ -1,0 +1,9 @@
+/* CI test badge on the top navbar */
+.navbar:after, .navbar-default:after {
+  content: "Pulpos Custom (CI test)";
+  color: #FFCC00;
+  font-weight: 600;
+  font-size: 12px;
+  margin-left: 12px;
+  letter-spacing: 0.5px;
+}
