@@ -140,6 +140,32 @@ def _ensure_mode_of_payment(name: str, company: str) -> str:
 	return doc.name
 
 
+def _get_write_off_account(company: str) -> str | None:
+	company_doc = frappe.get_cached_doc("Company", company)
+	if company_doc.write_off_account:
+		return company_doc.write_off_account
+	if company_doc.default_write_off_account:
+		return company_doc.default_write_off_account
+	# fallback: first non-group Expense account
+	return frappe.db.get_value(
+		"Account",
+		{"company": company, "account_type": "Expense Account", "is_group": 0},
+		"name",
+	)
+
+
+def _get_cost_center(company: str) -> str | None:
+	company_doc = frappe.get_cached_doc("Company", company)
+	if company_doc.cost_center:
+		return company_doc.cost_center
+	if company_doc.default_cost_center:
+		return company_doc.default_cost_center
+	# fallback: first non-group Cost Center for company
+	return frappe.db.get_value(
+		"Cost Center", {"company": company, "is_group": 0}, "name"
+	)
+
+
 def _get_mop_account(mode_of_payment: str, company: str) -> str | None:
 	return frappe.db.get_value(
 		"Mode of Payment Account",
@@ -171,6 +197,19 @@ def _create_pos_profiles(company: str, warehouses: dict, price_lists: dict):
 		if frappe.db.exists("POS Profile", pf["name"]):
 			continue
 
+		# Required fields; if missing, skip to avoid migration failure
+		mop_account = _get_mop_account("Cash", company)
+		write_off_acct = _get_write_off_account(company)
+		write_off_cc = _get_cost_center(company)
+
+		if not (mop_account and write_off_acct and write_off_cc):
+			frappe.log_error(
+				f"Skipping POS Profile {pf['name']} due to missing account/cc. "
+				f"MoP account: {mop_account}, Write-off: {write_off_acct}, Cost Center: {write_off_cc}",
+				"pulpos_custom.setup",
+			)
+			continue
+
 		doc = frappe.new_doc("POS Profile")
 		doc.name = pf["name"]
 		doc.company = company
@@ -180,15 +219,10 @@ def _create_pos_profiles(company: str, warehouses: dict, price_lists: dict):
 		doc.is_default = pf["default"]
 		doc.allow_print_before_pay = 0
 		doc.ignore_pricing_rule = 0
+		doc.write_off_account = write_off_acct
+		doc.write_off_cost_center = write_off_cc
 
 		# Default payment method (only if Mode of Payment has an account for this company)
-		mop_account = _get_mop_account("Cash", company)
-		if mop_account:
-			doc.append("payments", {"mode_of_payment": "Cash", "default": 1})
-		else:
-			frappe.log_error(
-				"Cash MoP missing account; skipping payment row on POS Profile",
-				"pulpos_custom.setup",
-			)
+		doc.append("payments", {"mode_of_payment": "Cash", "default": 1, "account": mop_account})
 
 		doc.insert(ignore_permissions=True)
