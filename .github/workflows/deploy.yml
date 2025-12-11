@@ -72,4 +72,9 @@ jobs:
             # bench migrate does not take --app in newer bench versions
             bench --site "${SITE_NAME}" migrate
             bench clear-cache
-            bench restart
+            # Try to restart services; do not fail deploy if supervisor isn't configured
+            if command -v supervisorctl >/dev/null 2>&1; then
+              sudo supervisorctl restart all || true
+            else
+              echo "supervisorctl not found; skipping process restart. Reload manually if needed."
+            fi
