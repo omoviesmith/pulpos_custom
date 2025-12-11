@@ -4,16 +4,27 @@ import frappe
 def ensure_setup():
 	"""Ensure baseline config for FerreTlap: two branches, two warehouses, two price lists."""
 	company = "FerreTlap"
-	if not frappe.db.exists("Company", company):
-		# Nothing to do if the target company isn't created yet.
-		frappe.log_error("FerreTlap company not found; skipping pulpos_custom ensure_setup", "pulpos_custom.setup")
-		return
+	company = _ensure_company(company)
 
 	currency = _get_company_currency(company)
 
 	_create_branches(company)
 	_create_warehouses(company)
 	_create_price_lists(currency)
+
+
+def _ensure_company(company: str) -> str:
+	if frappe.db.exists("Company", company):
+		return company
+
+	# If the target company doesn't exist, create it so the rest of the setup can proceed.
+	doc = frappe.new_doc("Company")
+	doc.company_name = company
+	doc.abbr = "FT"
+	doc.default_currency = frappe.db.get_default("currency") or "MXN"
+	doc.country = frappe.db.get_default("country") or "Mexico"
+	doc.insert(ignore_permissions=True)
+	return doc.name
 
 
 def _get_company_currency(company: str) -> str:
