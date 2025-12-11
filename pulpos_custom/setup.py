@@ -11,8 +11,9 @@ def ensure_setup():
 	root_wh = _ensure_root_warehouse(company)
 
 	_create_branches(company)
-	_create_warehouses(company, root_wh)
-	_create_price_lists(currency)
+	warehouse_map = _create_warehouses(company, root_wh)
+	price_lists = _create_price_lists(currency)
+	_create_pos_profiles(company, warehouse_map, price_lists)
 
 
 def _ensure_company(company: str) -> str:
@@ -78,8 +79,12 @@ def _create_warehouses(company: str, parent: str):
 		"FerreTlap Central Warehouse",
 		"FerreTlap Norte Warehouse",
 	]
+	created = {}
 	for wh in warehouses:
 		if frappe.db.exists("Warehouse", {"warehouse_name": wh, "company": company}):
+			created[wh] = frappe.db.get_value(
+				"Warehouse", {"warehouse_name": wh, "company": company}
+			)
 			continue
 		doc = frappe.new_doc("Warehouse")
 		doc.warehouse_name = wh
@@ -87,6 +92,8 @@ def _create_warehouses(company: str, parent: str):
 		doc.parent_warehouse = parent
 		doc.is_group = 0
 		doc.insert(ignore_permissions=True)
+		created[wh] = doc.name
+	return created
 
 
 def _create_price_lists(currency: str):
@@ -94,8 +101,10 @@ def _create_price_lists(currency: str):
 		{"price_list_name": "FerreTlap Retail", "selling": 1, "buying": 0},
 		{"price_list_name": "FerreTlap Wholesale", "selling": 1, "buying": 0},
 	]
+	names = {}
 	for pl in price_lists:
 		if frappe.db.exists("Price List", pl["price_list_name"]):
+			names[pl["price_list_name"]] = pl["price_list_name"]
 			continue
 		doc = frappe.new_doc("Price List")
 		doc.price_list_name = pl["price_list_name"]
@@ -103,4 +112,45 @@ def _create_price_lists(currency: str):
 		doc.currency = currency
 		doc.selling = pl["selling"]
 		doc.buying = pl["buying"]
+		doc.insert(ignore_permissions=True)
+		names[pl["price_list_name"]] = doc.name
+	return names
+
+
+def _create_pos_profiles(company: str, warehouses: dict, price_lists: dict):
+	"""Create POS Profiles per branch with branch-aware warehouse and price list."""
+	profiles = [
+		{
+			"name": "POS FerreTlap Matriz",
+			"branch": "FerreTlap Matriz",
+			"warehouse_key": "FerreTlap Central Warehouse",
+			"price_list_key": "FerreTlap Retail",
+			"default": 1,
+		},
+		{
+			"name": "POS FerreTlap Norte",
+			"branch": "FerreTlap Norte",
+			"warehouse_key": "FerreTlap Norte Warehouse",
+			"price_list_key": "FerreTlap Wholesale",
+			"default": 0,
+		},
+	]
+
+	for pf in profiles:
+		if frappe.db.exists("POS Profile", pf["name"]):
+			continue
+
+		doc = frappe.new_doc("POS Profile")
+		doc.name = pf["name"]
+		doc.company = company
+		doc.branch = pf["branch"]
+		doc.warehouse = warehouses.get(pf["warehouse_key"])
+		doc.selling_price_list = price_lists.get(pf["price_list_key"])
+		doc.is_default = pf["default"]
+		doc.allow_print_before_pay = 0
+		doc.ignore_pricing_rule = 0
+
+		# Default payment method
+		doc.append("payments", {"mode_of_payment": "Cash", "default": 1})
+
 		doc.insert(ignore_permissions=True)
