@@ -13,7 +13,7 @@ def ensure_setup():
 	_create_branches(company)
 	warehouse_map = _create_warehouses(company, root_wh)
 	price_lists = _create_price_lists(currency)
-	_ensure_mode_of_payment("Cash")
+	_ensure_mode_of_payment("Cash", company)
 	_create_pos_profiles(company, warehouse_map, price_lists)
 
 
@@ -118,15 +118,34 @@ def _create_price_lists(currency: str):
 	return names
 
 
-def _ensure_mode_of_payment(name: str) -> str:
+def _ensure_mode_of_payment(name: str, company: str) -> str:
+	company_doc = frappe.get_cached_doc("Company", company)
+	# Preferred account: company's default cash, else default bank
+	account = company_doc.default_cash_account or company_doc.default_bank_account
+
 	if frappe.db.exists("Mode of Payment", name):
+		mop = frappe.get_doc("Mode of Payment", name)
+		if account and not any(a.company == company for a in mop.accounts):
+			mop.append("accounts", {"company": company, "default_account": account})
+			mop.save(ignore_permissions=True)
 		return name
+
 	doc = frappe.new_doc("Mode of Payment")
 	doc.mode_of_payment = name
 	doc.type = "Cash"
 	doc.enabled = 1
+	if account:
+		doc.append("accounts", {"company": company, "default_account": account})
 	doc.insert(ignore_permissions=True)
 	return doc.name
+
+
+def _get_mop_account(mode_of_payment: str, company: str) -> str | None:
+	return frappe.db.get_value(
+		"Mode of Payment Account",
+		{"parent": mode_of_payment, "company": company},
+		"default_account",
+	)
 
 
 def _create_pos_profiles(company: str, warehouses: dict, price_lists: dict):
@@ -162,7 +181,14 @@ def _create_pos_profiles(company: str, warehouses: dict, price_lists: dict):
 		doc.allow_print_before_pay = 0
 		doc.ignore_pricing_rule = 0
 
-		# Default payment method
-		doc.append("payments", {"mode_of_payment": "Cash", "default": 1})
+		# Default payment method (only if Mode of Payment has an account for this company)
+		mop_account = _get_mop_account("Cash", company)
+		if mop_account:
+			doc.append("payments", {"mode_of_payment": "Cash", "default": 1})
+		else:
+			frappe.log_error(
+				"Cash MoP missing account; skipping payment row on POS Profile",
+				"pulpos_custom.setup",
+			)
 
 		doc.insert(ignore_permissions=True)
