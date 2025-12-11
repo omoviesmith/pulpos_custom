@@ -9,7 +9,11 @@ app_license = "MIT"
 # ------------------
 
 # include js, css files in header of desk.html
-app_include_css = ["/assets/pulpos_custom/css/pulpos_custom.css","/assets/pulpos_custom/css/pulpos_theme.css"]
+app_include_css = [
+	"/assets/pulpos_custom/css/pulpos_custom.css",
+	"/assets/pulpos_custom/css/pulpos_theme.css",
+	"/assets/pulpos_custom/css/pos_theme.css",
+]
 app_include_js = "/assets/pulpos_custom/js/pulpos_custom.js"
 
 # include js, css files in header of web template

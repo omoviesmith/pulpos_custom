@@ -1,0 +1,118 @@
+/* POS dark/yellow skin inspired by Pulpos mock */
+body.pulpos-pos {
+  --pos-bg: #0d0d0f;
+  --pos-panel: #141419;
+  --pos-panel-soft: #1a1a21;
+  --pos-border: #202028;
+  --pos-text: #f7f7f7;
+  --pos-text-dim: #c9c9ce;
+  --pos-accent: #ffc600;
+  background-color: var(--pos-bg);
+}
+
+body.pulpos-pos .pos,
+body.pulpos-pos .page-main-content {
+  background: var(--pos-bg);
+}
+
+body.pulpos-pos .pos .item-card,
+body.pulpos-pos .pos .item-wrapper,
+body.pulpos-pos .pos .item-container,
+body.pulpos-pos .pos .cart-container,
+body.pulpos-pos .pos .payment-container,
+body.pulpos-pos .pos .layout-main-section,
+body.pulpos-pos .modal-content {
+  background: var(--pos-panel);
+  border-color: var(--pos-border);
+  color: var(--pos-text);
+  box-shadow: none;
+}
+
+body.pulpos-pos .pos .item-card:hover {
+  border-color: var(--pos-accent);
+}
+
+body.pulpos-pos .pos .item-card .item-name,
+body.pulpos-pos .pos .item-card .item-price,
+body.pulpos-pos .pos .cart-container,
+body.pulpos-pos .pos .cart-item,
+body.pulpos-pos .pos .payment-container {
+  color: var(--pos-text);
+}
+
+body.pulpos-pos .pos .cart-container .cart-items .row,
+body.pulpos-pos .pos .cart-container .cart-items .cart-item {
+  background: var(--pos-panel-soft);
+  border-color: var(--pos-border);
+}
+
+body.pulpos-pos .pos .category-tabs .btn,
+body.pulpos-pos .pos .search-bar input,
+body.pulpos-pos .pos .search-bar .form-control,
+body.pulpos-pos .pos .filter-area select,
+body.pulpos-pos .pos .filter-area input,
+body.pulpos-pos input,
+body.pulpos-pos select {
+  background: var(--pos-panel-soft);
+  color: var(--pos-text);
+  border-color: var(--pos-border);
+}
+
+body.pulpos-pos .pos .category-tabs .btn.active,
+body.pulpos-pos .pos .btn-primary,
+body.pulpos-pos .pos .primary-action,
+body.pulpos-pos .btn.btn-primary,
+body.pulpos-pos .btn.btn-primary:focus,
+body.pulpos-pos .btn.btn-primary:hover {
+  background: var(--pos-accent) !important;
+  border-color: var(--pos-accent) !important;
+  color: #000 !important;
+  box-shadow: none !important;
+}
+
+body.pulpos-pos .pos .btn,
+body.pulpos-pos .pos .secondary-action,
+body.pulpos-pos .pos .btn-default {
+  background: var(--pos-panel-soft);
+  border-color: var(--pos-border);
+  color: var(--pos-text-dim);
+}
+
+body.pulpos-pos .pos .totals,
+body.pulpos-pos .pos .summary,
+body.pulpos-pos .pos .payment-container .amount,
+body.pulpos-pos .pos .cart-container .total,
+body.pulpos-pos .modal-title {
+  color: var(--pos-text);
+}
+
+body.pulpos-pos .pos .pay-section,
+body.pulpos-pos .pos .cart-footer,
+body.pulpos-pos .pos .payment-dialog {
+  background: var(--pos-panel);
+  border-top: 1px solid var(--pos-border);
+}
+
+/* Quick-pay pill buttons */
+body.pulpos-pos .pulpos-quick-pay {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+body.pulpos-pos .pulpos-quick-pay button {
+  padding: 6px 10px;
+  background: var(--pos-panel-soft);
+  color: var(--pos-text);
+  border: 1px solid var(--pos-border);
+  border-radius: 8px;
+}
+body.pulpos-pos .pulpos-quick-pay button:hover {
+  border-color: var(--pos-accent);
+  color: var(--pos-accent);
+}
+
+/* Compact header filters */
+body.pulpos-pos .pos .filter-area {
+  background: var(--pos-bg);
+  border-bottom: 1px solid var(--pos-border);
+}
