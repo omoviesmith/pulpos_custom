@@ -8,8 +8,10 @@ def ensure_setup():
 
 	currency = _get_company_currency(company)
 
+	root_wh = _ensure_root_warehouse(company)
+
 	_create_branches(company)
-	_create_warehouses(company)
+	_create_warehouses(company, root_wh)
 	_create_price_lists(currency)
 
 
@@ -49,8 +51,29 @@ def _create_branches(company: str):
 		doc.insert(ignore_permissions=True)
 
 
-def _create_warehouses(company: str):
-	parent = "All Warehouses"
+def _ensure_root_warehouse(company: str) -> str:
+	# Try to find existing root for this company
+	existing = frappe.db.get_value(
+		"Warehouse", {"company": company, "is_group": 1, "parent_warehouse": ""}, "name"
+	)
+	if existing:
+		return existing
+
+	# Create a root warehouse node if none exists
+	root_name = f"All Warehouses - {frappe.get_cached_doc('Company', company).abbr}"
+	if frappe.db.exists("Warehouse", root_name):
+		return root_name
+
+	doc = frappe.new_doc("Warehouse")
+	doc.warehouse_name = root_name
+	doc.company = company
+	doc.is_group = 1
+	doc.parent_warehouse = ""  # root
+	doc.insert(ignore_permissions=True)
+	return doc.name
+
+
+def _create_warehouses(company: str, parent: str):
 	warehouses = [
 		"FerreTlap Central Warehouse",
 		"FerreTlap Norte Warehouse",
