@@ -69,6 +69,7 @@ jobs:
 
             cd "${BENCH_PATH}"
             bench build --app "${APP_NAME}"
-            bench --site "${SITE_NAME}" migrate --app "${APP_NAME}"
+            # bench migrate does not take --app in newer bench versions
+            bench --site "${SITE_NAME}" migrate
             bench clear-cache
             bench restart
