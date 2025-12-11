@@ -1,0 +1,71 @@
+name: Deploy to Contabo
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Contabo VPS
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          APP_NAME: pulpos_custom
+          BRANCH: ${{ github.ref_name }}
+          BENCH_PATH: ${{ secrets.BENCH_PATH }}
+          SITE_NAME: ${{ secrets.SITE_NAME }}
+          REPOSITORY: ${{ github.repository }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+        with:
+          host: ${{ secrets.CONTABO_HOST }}
+          username: ${{ secrets.CONTABO_USER }}
+          key: ${{ secrets.CONTABO_SSH_KEY }}
+          password: ${{ secrets.CONTABO_PASSWORD }}
+          port: ${{ secrets.CONTABO_PORT }}
+          envs: APP_NAME,BRANCH,BENCH_PATH,SITE_NAME,REPOSITORY,GH_PAT
+          script_stop: true
+          command_timeout: 30m
+          script: |
+            set -euo pipefail
+
+            if [ -z "${BENCH_PATH:-}" ]; then
+              echo "BENCH_PATH secret is required (e.g. /opt/bench/frappe-bench)." >&2
+              exit 1
+            fi
+
+            if [ -z "${SITE_NAME:-}" ]; then
+              echo "SITE_NAME secret is required (e.g. site1.local or yourdomain.com)." >&2
+              exit 1
+            fi
+
+            APP_DIR="${BENCH_PATH}/apps/${APP_NAME}"
+            REPO_URL="https://github.com/${REPOSITORY}.git"
+
+            if [ -n "${GH_PAT:-}" ]; then
+              REPO_URL="https://${GH_PAT}@github.com/${REPOSITORY}.git"
+            fi
+
+            if [ -d "${APP_DIR}/.git" ]; then
+              cd "${APP_DIR}"
+              git fetch origin
+              git checkout "${BRANCH}" || git checkout -B "${BRANCH}"
+              git reset --hard "origin/${BRANCH}"
+            else
+              mkdir -p "${BENCH_PATH}/apps"
+              cd "${BENCH_PATH}/apps"
+              git clone -b "${BRANCH}" "${REPO_URL}" "${APP_NAME}"
+            fi
+
+            cd "${BENCH_PATH}"
+            bench build --app "${APP_NAME}"
+            bench --site "${SITE_NAME}" migrate --app "${APP_NAME}"
+            bench clear-cache
+            bench restart

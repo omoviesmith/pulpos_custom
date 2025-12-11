@@ -1,7 +1,15 @@
 .DS_Store
 *.pyc
+__pycache__/
 *.egg-info
 *.swp
 tags
+*.log
+.env
+.venv/
+env/
+venv/
+.idea/
+.vscode/
 pulpos_custom/docs/current
 node_modules/

@@ -5,6 +5,6 @@ def get_data():
 		{
 			"module_name": "Pulpos Custom",
 			"type": "module",
-			"label": _("Pulpos Custom")
+			"label": _("Pulpos Custom (CI test)")
 		}
 	]
