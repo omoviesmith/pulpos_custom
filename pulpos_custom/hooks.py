@@ -164,6 +164,9 @@ app_include_css = ["/assets/pulpos_custom/css/pulpos_custom.css","/assets/pulpos
 # 	"Task": "pulpos_custom.task.get_dashboard_data"
 # }
 
+# Run setup after migrations to ensure baseline data
+after_migrate = "pulpos_custom.setup.ensure_setup"
+
 # exempt linked doctypes from being automatically cancelled
 #
 # auto_cancel_exempted_doctypes = ["Auto Repeat"]
