@@ -13,6 +13,7 @@ def ensure_setup():
 	_create_branches(company)
 	warehouse_map = _create_warehouses(company, root_wh)
 	price_lists = _create_price_lists(currency)
+	_ensure_mode_of_payment("Cash")
 	_create_pos_profiles(company, warehouse_map, price_lists)
 
 
@@ -115,6 +116,17 @@ def _create_price_lists(currency: str):
 		doc.insert(ignore_permissions=True)
 		names[pl["price_list_name"]] = doc.name
 	return names
+
+
+def _ensure_mode_of_payment(name: str) -> str:
+	if frappe.db.exists("Mode of Payment", name):
+		return name
+	doc = frappe.new_doc("Mode of Payment")
+	doc.mode_of_payment = name
+	doc.type = "Cash"
+	doc.enabled = 1
+	doc.insert(ignore_permissions=True)
+	return doc.name
 
 
 def _create_pos_profiles(company: str, warehouses: dict, price_lists: dict):
