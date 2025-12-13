@@ -26,6 +26,19 @@ body.pulpos-pos .standard-page {
   color: var(--pos-text);
 }
 
+/* React POS shell */
+body.pulpos-pos .point-of-sale-app {
+  background: var(--pos-bg) !important;
+  color: var(--pos-text);
+}
+
+body.pulpos-pos .point-of-sale-app section {
+  background: var(--pos-panel) !important;
+  border: 1px solid var(--pos-border) !important;
+  border-radius: 14px;
+  color: var(--pos-text);
+}
+
 /* Filters / search bar */
 body.pulpos-pos .page-form,
 body.pulpos-pos .pos-page-filters,
@@ -79,6 +92,17 @@ body.pulpos-pos .pos .item-card:hover {
 body.pulpos-pos .pos .item-card .item-name,
 body.pulpos-pos .pos .item-card .item-price {
   color: var(--pos-text) !important;
+}
+
+body.pulpos-pos .point-of-sale-app .items-selector .filter-section {
+  background: var(--pos-bg) !important;
+  border: none !important;
+}
+
+body.pulpos-pos .point-of-sale-app .item-qty-pill .indicator-pill {
+  background: var(--pos-panel-soft) !important;
+  border: 1px solid var(--pos-border) !important;
+  color: var(--pos-text-dim) !important;
 }
 
 /* Cart / summary */
@@ -138,6 +162,35 @@ body.pulpos-pos .pos .cart-footer,
 body.pulpos-pos .pos .payment-dialog {
   background: var(--pos-panel) !important;
   border-top: 1px solid var(--pos-border) !important;
+}
+
+body.pulpos-pos .point-of-sale-app .cart-label,
+body.pulpos-pos .point-of-sale-app .label,
+body.pulpos-pos .point-of-sale-app .section-label {
+  color: var(--pos-text) !important;
+}
+
+body.pulpos-pos .point-of-sale-app .checkout-btn,
+body.pulpos-pos .point-of-sale-app .submit-order-btn,
+body.pulpos-pos .point-of-sale-app .numpad-btn.checkout-btn {
+  background: var(--pos-accent) !important;
+  border: 1px solid var(--pos-accent) !important;
+  color: #000 !important;
+}
+
+body.pulpos-pos .point-of-sale-app .numpad-btn,
+body.pulpos-pos .point-of-sale-app .number-pad .numpad-btn {
+  background: var(--pos-panel-soft) !important;
+  border: 1px solid var(--pos-border) !important;
+  color: var(--pos-text) !important;
+}
+
+body.pulpos-pos .point-of-sale-app .customer-section,
+body.pulpos-pos .point-of-sale-app .payment-container,
+body.pulpos-pos .point-of-sale-app .past-order-list,
+body.pulpos-pos .point-of-sale-app .past-order-summary {
+  background: var(--pos-panel) !important;
+  border-color: var(--pos-border) !important;
 }
 
 /* Quick-pay pill buttons */

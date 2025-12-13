@@ -67,6 +67,7 @@
 	const POS_ROUTES = ["point-of-sale", "pos"];
 	let quickPayInjected = false;
 	let posClassApplied = false;
+	let customerSet = false;
 
 	const isPosRoute = () => {
 		const r = frappe.get_route && frappe.get_route();
@@ -122,6 +123,41 @@
 		}
 		focusPosSearch();
 		injectQuickPay();
+		setDefaultCustomer();
+	};
+
+	const setDefaultCustomer = () => {
+		if (customerSet) return;
+
+		// Try cur_pos API first (ERPNext POS object)
+		try {
+			if (window.cur_pos && cur_pos.customer_field) {
+				const current = cur_pos.customer_field.get_value();
+				const fallback = (cur_pos.pos_profile_data && cur_pos.pos_profile_data.customer) || "Publico General - 1";
+				if (!current && fallback) {
+					cur_pos.customer_field.set_value(fallback);
+					customerSet = true;
+					return;
+				}
+				if (current) {
+					customerSet = true;
+					return;
+				}
+			}
+		} catch (e) {
+			// ignore
+		}
+
+		// Fallback: set the DOM input if empty
+		const customerInput = document.querySelector(
+			'.customer-section input[data-fieldtype="Link"], .customer-section input[placeholder*="Cliente"]'
+		);
+		if (customerInput && !customerInput.value) {
+			customerInput.value = "Publico General - 1";
+			customerInput.dispatchEvent(new Event("input", { bubbles: true }));
+			customerInput.dispatchEvent(new Event("change", { bubbles: true }));
+			customerSet = true;
+		}
 	};
 
 	// React to route changes and initial load
