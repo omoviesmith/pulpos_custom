@@ -182,6 +182,7 @@ def _create_pos_profiles(company: str, warehouses: dict, price_lists: dict):
 			"branch": "FerreTlap Matriz",
 			"warehouse_key": "FerreTlap Central Warehouse",
 			"price_list_key": "FerreTlap Retail",
+			"default_customer": "Walk-in Customer",
 			"default": 1,
 		},
 		{
@@ -189,6 +190,7 @@ def _create_pos_profiles(company: str, warehouses: dict, price_lists: dict):
 			"branch": "FerreTlap Norte",
 			"warehouse_key": "FerreTlap Norte Warehouse",
 			"price_list_key": "FerreTlap Wholesale",
+			"default_customer": "Walk-in Customer",
 			"default": 0,
 		},
 	]
@@ -221,6 +223,8 @@ def _create_pos_profiles(company: str, warehouses: dict, price_lists: dict):
 		doc.ignore_pricing_rule = 0
 		doc.write_off_account = write_off_acct
 		doc.write_off_cost_center = write_off_cc
+		if pf.get("default_customer") and frappe.db.exists("Customer", pf["default_customer"]):
+			doc.customer = pf["default_customer"]
 
 		# Default payment method (only if Mode of Payment has an account for this company)
 		doc.append("payments", {"mode_of_payment": "Cash", "default": 1, "account": mop_account})

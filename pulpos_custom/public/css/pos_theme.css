@@ -57,7 +57,9 @@ body.pulpos-pos .pos .item-container,
 body.pulpos-pos .pos .item-card,
 body.pulpos-pos .pos .item-wrapper,
 body.pulpos-pos .pos .pos-items,
-body.pulpos-pos .pos .items-area {
+body.pulpos-pos .pos .items-area,
+body.pulpos-pos .pos .item-list,
+body.pulpos-pos .pos .pos-items-wrapper {
   background: var(--pos-bg) !important;
   border-color: var(--pos-border) !important;
 }

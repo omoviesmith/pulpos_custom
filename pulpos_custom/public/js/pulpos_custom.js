@@ -66,6 +66,7 @@
 	// POS enhancements: dark/yellow skin, quick search focus, quick-pay buttons (non-invasive)
 	const POS_ROUTES = ["point-of-sale", "pos"];
 	let quickPayInjected = false;
+	let posClassApplied = false;
 
 	const isPosRoute = () => {
 		const r = frappe.get_route && frappe.get_route();
@@ -115,7 +116,10 @@
 
 	const applyPosEnhancements = () => {
 		if (!isPosRoute()) return;
-		document.body.classList.add("pulpos-pos");
+		if (!posClassApplied) {
+			document.body.classList.add("pulpos-pos");
+			posClassApplied = true;
+		}
 		focusPosSearch();
 		injectQuickPay();
 	};
@@ -123,9 +127,14 @@
 	// React to route changes and initial load
 	frappe.router && frappe.router.on("change", () => {
 		quickPayInjected = false;
+		posClassApplied = false;
 		setTimeout(applyPosEnhancements, 100);
 		setTimeout(applyPosEnhancements, 500);
 	});
 	setTimeout(applyPosEnhancements, 200);
 	setTimeout(applyPosEnhancements, 1200);
+	// Keep trying for SPA hiccups
+	setInterval(() => {
+		if (isPosRoute()) applyPosEnhancements();
+	}, 3000);
 })();
