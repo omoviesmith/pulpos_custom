@@ -3,62 +3,113 @@ body.pulpos-pos {
   --pos-bg: #0d0d0f;
   --pos-panel: #141419;
   --pos-panel-soft: #1a1a21;
-  --pos-border: #202028;
+  --pos-border: #24242c;
   --pos-text: #f7f7f7;
   --pos-text-dim: #c9c9ce;
   --pos-accent: #ffc600;
+  --pos-card: #191920;
   background-color: var(--pos-bg);
+  color: var(--pos-text);
 }
 
-body.pulpos-pos .pos,
-body.pulpos-pos .page-main-content {
-  background: var(--pos-bg);
+/* Page chrome */
+body.pulpos-pos .page-container,
+body.pulpos-pos .page-head,
+body.pulpos-pos .page-title,
+body.pulpos-pos .page-head-content,
+body.pulpos-pos .page-form,
+body.pulpos-pos .layout-main-section,
+body.pulpos-pos .layout-side-section,
+body.pulpos-pos .page-body,
+body.pulpos-pos .standard-page {
+  background: var(--pos-bg) !important;
+  color: var(--pos-text);
 }
 
+/* Filters / search bar */
+body.pulpos-pos .page-form,
+body.pulpos-pos .pos-page-filters,
+body.pulpos-pos .pos .filter-area {
+  background: var(--pos-bg) !important;
+  border-bottom: 1px solid var(--pos-border);
+  padding-bottom: 12px;
+}
+
+body.pulpos-pos input,
+body.pulpos-pos select,
+body.pulpos-pos .form-control,
+body.pulpos-pos .input-with-feedback,
+body.pulpos-pos .awesomplete > input,
+body.pulpos-pos .pos .search-bar input {
+  background: var(--pos-panel-soft) !important;
+  color: var(--pos-text) !important;
+  border: 1px solid var(--pos-border) !important;
+  box-shadow: none !important;
+}
+
+body.pulpos-pos ::placeholder {
+  color: var(--pos-text-dim) !important;
+}
+
+/* Item grid */
+body.pulpos-pos .pos .items-section,
+body.pulpos-pos .pos .item-container,
 body.pulpos-pos .pos .item-card,
 body.pulpos-pos .pos .item-wrapper,
-body.pulpos-pos .pos .item-container,
-body.pulpos-pos .pos .cart-container,
-body.pulpos-pos .pos .payment-container,
-body.pulpos-pos .pos .layout-main-section,
-body.pulpos-pos .modal-content {
-  background: var(--pos-panel);
-  border-color: var(--pos-border);
+body.pulpos-pos .pos .pos-items,
+body.pulpos-pos .pos .items-area {
+  background: var(--pos-bg) !important;
+  border-color: var(--pos-border) !important;
+}
+
+body.pulpos-pos .pos .item-card {
+  background: var(--pos-card) !important;
+  border: 1px solid var(--pos-border) !important;
+  border-radius: 14px;
+  box-shadow: none !important;
   color: var(--pos-text);
-  box-shadow: none;
 }
 
 body.pulpos-pos .pos .item-card:hover {
-  border-color: var(--pos-accent);
+  border-color: var(--pos-accent) !important;
 }
 
 body.pulpos-pos .pos .item-card .item-name,
-body.pulpos-pos .pos .item-card .item-price,
+body.pulpos-pos .pos .item-card .item-price {
+  color: var(--pos-text) !important;
+}
+
+/* Cart / summary */
 body.pulpos-pos .pos .cart-container,
+body.pulpos-pos .pos .cart-items,
 body.pulpos-pos .pos .cart-item,
-body.pulpos-pos .pos .payment-container {
-  color: var(--pos-text);
+body.pulpos-pos .pos .summary-section,
+body.pulpos-pos .pos .payment-container,
+body.pulpos-pos .pos .pos-bill,
+body.pulpos-pos .pos .basket-items {
+  background: var(--pos-panel) !important;
+  border-color: var(--pos-border) !important;
+  color: var(--pos-text) !important;
 }
 
-body.pulpos-pos .pos .cart-container .cart-items .row,
-body.pulpos-pos .pos .cart-container .cart-items .cart-item {
-  background: var(--pos-panel-soft);
-  border-color: var(--pos-border);
+body.pulpos-pos .pos .cart-container .cart-item,
+body.pulpos-pos .pos .basket-items .row,
+body.pulpos-pos .pos .basket-items .item-row {
+  background: var(--pos-panel-soft) !important;
+  border-bottom: 1px solid var(--pos-border) !important;
 }
 
-body.pulpos-pos .pos .category-tabs .btn,
-body.pulpos-pos .pos .search-bar input,
-body.pulpos-pos .pos .search-bar .form-control,
-body.pulpos-pos .pos .filter-area select,
-body.pulpos-pos .pos .filter-area input,
-body.pulpos-pos input,
-body.pulpos-pos select {
-  background: var(--pos-panel-soft);
-  color: var(--pos-text);
-  border-color: var(--pos-border);
+body.pulpos-pos .pos .totals,
+body.pulpos-pos .pos .summary,
+body.pulpos-pos .pos .payment-container .amount,
+body.pulpos-pos .pos .cart-container .total,
+body.pulpos-pos .pos .net-total,
+body.pulpos-pos .pos .grand-total,
+body.pulpos-pos .pos .cart-container .cart-summary {
+  color: var(--pos-text) !important;
 }
 
-body.pulpos-pos .pos .category-tabs .btn.active,
+/* Buttons */
 body.pulpos-pos .pos .btn-primary,
 body.pulpos-pos .pos .primary-action,
 body.pulpos-pos .btn.btn-primary,
@@ -71,26 +122,20 @@ body.pulpos-pos .btn.btn-primary:hover {
 }
 
 body.pulpos-pos .pos .btn,
-body.pulpos-pos .pos .secondary-action,
-body.pulpos-pos .pos .btn-default {
-  background: var(--pos-panel-soft);
-  border-color: var(--pos-border);
-  color: var(--pos-text-dim);
+body.pulpos-pos .pos .btn-default,
+body.pulpos-pos .pos .btn-secondary {
+  background: var(--pos-panel-soft) !important;
+  border-color: var(--pos-border) !important;
+  color: var(--pos-text) !important;
+  box-shadow: none !important;
 }
 
-body.pulpos-pos .pos .totals,
-body.pulpos-pos .pos .summary,
-body.pulpos-pos .pos .payment-container .amount,
-body.pulpos-pos .pos .cart-container .total,
-body.pulpos-pos .modal-title {
-  color: var(--pos-text);
-}
-
+/* Pay footer */
 body.pulpos-pos .pos .pay-section,
 body.pulpos-pos .pos .cart-footer,
 body.pulpos-pos .pos .payment-dialog {
-  background: var(--pos-panel);
-  border-top: 1px solid var(--pos-border);
+  background: var(--pos-panel) !important;
+  border-top: 1px solid var(--pos-border) !important;
 }
 
 /* Quick-pay pill buttons */
@@ -100,19 +145,13 @@ body.pulpos-pos .pulpos-quick-pay {
   margin-top: 8px;
 }
 body.pulpos-pos .pulpos-quick-pay button {
-  padding: 6px 10px;
+  padding: 8px 12px;
   background: var(--pos-panel-soft);
   color: var(--pos-text);
   border: 1px solid var(--pos-border);
-  border-radius: 8px;
+  border-radius: 10px;
 }
 body.pulpos-pos .pulpos-quick-pay button:hover {
   border-color: var(--pos-accent);
   color: var(--pos-accent);
-}
-
-/* Compact header filters */
-body.pulpos-pos .pos .filter-area {
-  background: var(--pos-bg);
-  border-bottom: 1px solid var(--pos-border);
 }

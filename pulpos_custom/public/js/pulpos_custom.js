@@ -69,7 +69,9 @@
 
 	const isPosRoute = () => {
 		const r = frappe.get_route && frappe.get_route();
-		return r && r.length && POS_ROUTES.includes(r[0]);
+		if (r && r.length && POS_ROUTES.includes(r[0])) return true;
+		// Fallback for direct URL load
+		return window.location.pathname.includes("point-of-sale") || window.location.pathname.endsWith("/pos");
 	};
 
 	const focusPosSearch = () => {
@@ -118,12 +120,12 @@
 		injectQuickPay();
 	};
 
+	// React to route changes and initial load
 	frappe.router && frappe.router.on("change", () => {
 		quickPayInjected = false;
 		setTimeout(applyPosEnhancements, 100);
-		setTimeout(applyPosEnhancements, 800);
+		setTimeout(applyPosEnhancements, 500);
 	});
-
-	// Initial fire in case page is already on POS
-	setTimeout(applyPosEnhancements, 500);
+	setTimeout(applyPosEnhancements, 200);
+	setTimeout(applyPosEnhancements, 1200);
 })();
