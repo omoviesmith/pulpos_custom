@@ -68,6 +68,7 @@
 	let quickPayInjected = false;
 	let posClassApplied = false;
 	let customerSet = false;
+	const DEFAULT_CUSTOMER = "Publico General - 1";
 
 	const isPosRoute = () => {
 		const r = frappe.get_route && frappe.get_route();
@@ -133,7 +134,7 @@
 		try {
 			if (window.cur_pos && cur_pos.customer_field) {
 				const current = cur_pos.customer_field.get_value();
-				const fallback = (cur_pos.pos_profile_data && cur_pos.pos_profile_data.customer) || "Publico General - 1";
+				const fallback = (cur_pos.pos_profile_data && cur_pos.pos_profile_data.customer) || DEFAULT_CUSTOMER;
 				if (!current && fallback) {
 					cur_pos.customer_field.set_value(fallback);
 					customerSet = true;
@@ -153,7 +154,7 @@
 			'.customer-section input[data-fieldtype="Link"], .customer-section input[placeholder*="Cliente"]'
 		);
 		if (customerInput && !customerInput.value) {
-			customerInput.value = "Publico General - 1";
+			customerInput.value = DEFAULT_CUSTOMER;
 			customerInput.dispatchEvent(new Event("input", { bubbles: true }));
 			customerInput.dispatchEvent(new Event("change", { bubbles: true }));
 			customerSet = true;

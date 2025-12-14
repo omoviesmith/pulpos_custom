@@ -24,6 +24,7 @@ body.pulpos-pos .page-body,
 body.pulpos-pos .standard-page {
   background: var(--pos-bg) !important;
   color: var(--pos-text);
+  box-shadow: none !important;
 }
 
 /* React POS shell */
@@ -37,6 +38,7 @@ body.pulpos-pos .point-of-sale-app section {
   border: 1px solid var(--pos-border) !important;
   border-radius: 14px;
   color: var(--pos-text);
+  box-shadow: none !important;
 }
 
 /* Filters / search bar */
@@ -103,6 +105,20 @@ body.pulpos-pos .point-of-sale-app .item-qty-pill .indicator-pill {
   background: var(--pos-panel-soft) !important;
   border: 1px solid var(--pos-border) !important;
   color: var(--pos-text-dim) !important;
+}
+
+/* Hide extra filters to simplify */
+body.pulpos-pos .point-of-sale-app .item-group-field,
+body.pulpos-pos .point-of-sale-app .past-order-list,
+body.pulpos-pos .point-of-sale-app .past-order-summary,
+body.pulpos-pos .point-of-sale-app .customer-section .customer-field + .help-box,
+body.pulpos-pos .point-of-sale-app .filter-section .label {
+  display: none !important;
+}
+
+/* Hide customer picker (we auto-set a default) */
+body.pulpos-pos .point-of-sale-app .customer-section {
+  display: none !important;
 }
 
 /* Cart / summary */
@@ -176,6 +192,7 @@ body.pulpos-pos .point-of-sale-app .numpad-btn.checkout-btn {
   background: var(--pos-accent) !important;
   border: 1px solid var(--pos-accent) !important;
   color: #000 !important;
+  box-shadow: none !important;
 }
 
 body.pulpos-pos .point-of-sale-app .numpad-btn,
