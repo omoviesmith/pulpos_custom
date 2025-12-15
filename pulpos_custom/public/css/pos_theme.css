@@ -93,6 +93,9 @@ body.pulpos-pos .pos .item-card {
   border: 1px solid var(--pos-border) !important;
   border-radius: 14px;
   box-shadow: none !important;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   color: var(--pos-text);
 }
 
@@ -109,9 +112,9 @@ body.pulpos-pos .pos .item-card .item-price {
 body.pulpos-pos .pos .item-card .item-display,
 body.pulpos-pos .pos .item-card .item-img,
 body.pulpos-pos .pos .item-card img {
-  height: 140px;
+  height: 140px !important;
   width: 100%;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 12px;
   background: var(--pos-panel-soft) !important;
   display: flex;
@@ -126,6 +129,15 @@ body.pulpos-pos .pos .item-card img,
 body.pulpos-pos .pos .item-card .item-img {
   opacity: 1 !important;
   filter: none !important;
+}
+
+/* Keep detail text aligned under image block */
+body.pulpos-pos .pos .item-card .item-detail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 2px;
 }
 
 body.pulpos-pos .point-of-sale-app .items-selector .filter-section {
