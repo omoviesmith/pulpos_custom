@@ -256,6 +256,12 @@ body.pulpos-pos .point-of-sale-app .totals-section {
   color: var(--pos-text) !important;
 }
 
+/* Slightly lighter background for empty-cart placeholder */
+body.pulpos-pos .point-of-sale-app > .customer-cart-container > .cart-container > .abs-cart-container .no-item-wrapper {
+  background-color: var(--pos-panel-soft) !important;
+  color: var(--pos-text-dim) !important;
+}
+
 body.pulpos-pos .pos .cart-container .cart-item,
 body.pulpos-pos .pos .basket-items .row,
 body.pulpos-pos .pos .basket-items .item-row {
