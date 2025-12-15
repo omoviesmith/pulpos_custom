@@ -105,6 +105,23 @@ body.pulpos-pos .pos .item-card .item-price {
   color: var(--pos-text) !important;
 }
 
+/* Normalize item image/abbr blocks to square tiles */
+body.pulpos-pos .pos .item-card .item-display,
+body.pulpos-pos .pos .item-card .item-img,
+body.pulpos-pos .pos .item-card img {
+  height: 140px;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  background: var(--pos-panel-soft) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pos-text-dim);
+  font-weight: 600;
+  font-size: 22px;
+}
+
 body.pulpos-pos .pos .item-card img,
 body.pulpos-pos .pos .item-card .item-img {
   opacity: 1 !important;
