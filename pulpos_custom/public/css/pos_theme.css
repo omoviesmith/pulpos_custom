@@ -216,7 +216,6 @@ body.pulpos-pos .point-of-sale-app .item-qty-pill .indicator-pill {
 }
 
 /* Hide extra filters to simplify */
-body.pulpos-pos .point-of-sale-app .item-group-field,
 body.pulpos-pos .point-of-sale-app .past-order-list,
 body.pulpos-pos .point-of-sale-app .past-order-summary,
 body.pulpos-pos .point-of-sale-app .customer-section .customer-field + .help-box,
@@ -236,7 +235,14 @@ body.pulpos-pos .pos .cart-item,
 body.pulpos-pos .pos .summary-section,
 body.pulpos-pos .pos .payment-container,
 body.pulpos-pos .pos .pos-bill,
-body.pulpos-pos .pos .basket-items {
+body.pulpos-pos .pos .basket-items,
+body.pulpos-pos .point-of-sale-app .cart-container,
+body.pulpos-pos .point-of-sale-app .cart-items-section,
+body.pulpos-pos .point-of-sale-app .cart-totals-section,
+body.pulpos-pos .point-of-sale-app .payment-container,
+body.pulpos-pos .point-of-sale-app .numpad-section,
+body.pulpos-pos .point-of-sale-app .numpad-totals,
+body.pulpos-pos .point-of-sale-app .totals-section {
   background: var(--pos-panel) !important;
   border-color: var(--pos-border) !important;
   color: var(--pos-text) !important;

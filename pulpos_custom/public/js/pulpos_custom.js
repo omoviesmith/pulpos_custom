@@ -69,6 +69,7 @@
 	let posClassApplied = false;
 	let customerSet = false;
 	const DEFAULT_CUSTOMER = "Publico General - 1";
+	let filterButtonAdded = false;
 
 	const isPosRoute = () => {
 		const r = frappe.get_route && frappe.get_route();
@@ -125,6 +126,7 @@
 		focusPosSearch();
 		injectQuickPay();
 		setDefaultCustomer();
+		addFilterButton();
 	};
 
 	const setDefaultCustomer = () => {
@@ -174,4 +176,42 @@
 	setInterval(() => {
 		if (isPosRoute()) applyPosEnhancements();
 	}, 3000);
+
+	const addFilterButton = () => {
+		if (filterButtonAdded) return;
+		const filterSection = document.querySelector(".point-of-sale-app .items-selector .filter-section");
+		const itemGroupField = document.querySelector(".point-of-sale-app .item-group-field");
+		if (!filterSection || !itemGroupField) return;
+
+		// Wrap search and button
+		if (!filterSection.classList.contains("pulpos-filter-bar")) {
+			filterSection.classList.add("pulpos-filter-bar");
+			filterSection.style.position = "relative";
+		}
+
+		// Filter button
+		const btn = document.createElement("button");
+		btn.type = "button";
+		btn.className = "pulpos-filter-btn";
+		btn.textContent = "Filters";
+
+		// Dropdown menu
+		const menu = document.createElement("div");
+		menu.className = "pulpos-filter-menu";
+		// Move item group field into menu
+		menu.appendChild(itemGroupField);
+		itemGroupField.style.display = "block";
+
+		btn.addEventListener("click", (e) => {
+			e.stopPropagation();
+			menu.classList.toggle("show");
+		});
+		document.addEventListener("click", () => {
+			menu.classList.remove("show");
+		});
+
+		filterSection.appendChild(btn);
+		filterSection.appendChild(menu);
+		filterButtonAdded = true;
+	};
 })();
