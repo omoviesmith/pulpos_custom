@@ -223,6 +223,14 @@ body.pulpos-pos .point-of-sale-app .filter-section .label {
   display: none !important;
 }
 
+/* Darken cart container (abs-cart-container wrapper) */
+body.pulpos-pos .point-of-sale-app .abs-cart-container {
+  background: var(--pos-panel) !important;
+  border: 1px solid var(--pos-border) !important;
+  border-radius: 12px;
+  color: var(--pos-text) !important;
+}
+
 /* Hide customer picker (we auto-set a default) */
 body.pulpos-pos .point-of-sale-app .customer-section {
   display: none !important;
