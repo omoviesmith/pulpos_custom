@@ -97,6 +97,8 @@ body.pulpos-pos .pos .item-card {
   flex-direction: column;
   gap: 8px;
   color: var(--pos-text);
+  min-height: 220px;
+  width: 180px;
 }
 
 body.pulpos-pos .pos .item-card:hover {
@@ -123,12 +125,14 @@ body.pulpos-pos .pos .item-card img {
   color: var(--pos-text-dim);
   font-weight: 600;
   font-size: 22px;
+  overflow: hidden;
 }
 
 body.pulpos-pos .pos .item-card img,
 body.pulpos-pos .pos .item-card .item-img {
   opacity: 1 !important;
   filter: none !important;
+  display: block;
 }
 
 /* Keep detail text aligned under image block */
