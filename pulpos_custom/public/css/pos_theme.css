@@ -33,6 +33,15 @@ body.pulpos-pos .point-of-sale-app {
   color: var(--pos-text);
 }
 
+/* Kill any blocking overlay/backdrop in POS view */
+body.pulpos-pos .freeze,
+body.pulpos-pos .freeze-modal,
+body.pulpos-pos .modal-backdrop {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 body.pulpos-pos .point-of-sale-app section {
   background: var(--pos-panel) !important;
   border: 1px solid var(--pos-border) !important;
@@ -94,6 +103,12 @@ body.pulpos-pos .pos .item-card:hover {
 body.pulpos-pos .pos .item-card .item-name,
 body.pulpos-pos .pos .item-card .item-price {
   color: var(--pos-text) !important;
+}
+
+body.pulpos-pos .pos .item-card img,
+body.pulpos-pos .pos .item-card .item-img {
+  opacity: 1 !important;
+  filter: none !important;
 }
 
 body.pulpos-pos .point-of-sale-app .items-selector .filter-section {
