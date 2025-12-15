@@ -88,6 +88,41 @@ body.pulpos-pos .pos .pos-items-wrapper {
   border-color: var(--pos-border) !important;
 }
 
+/* Hide scrollbars until hover */
+body.pulpos-pos .pos .pos-items,
+body.pulpos-pos .pos .items-area,
+body.pulpos-pos .pos .pos-items-wrapper {
+  scrollbar-width: none; /* Firefox */
+}
+body.pulpos-pos .pos .pos-items::-webkit-scrollbar,
+body.pulpos-pos .pos .items-area::-webkit-scrollbar,
+body.pulpos-pos .pos .pos-items-wrapper::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+body.pulpos-pos .pos .pos-items:hover,
+body.pulpos-pos .pos .items-area:hover,
+body.pulpos-pos .pos .pos-items-wrapper:hover {
+  scrollbar-width: thin;
+}
+body.pulpos-pos .pos .pos-items:hover::-webkit-scrollbar,
+body.pulpos-pos .pos .items-area:hover::-webkit-scrollbar,
+body.pulpos-pos .pos .pos-items-wrapper:hover::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+body.pulpos-pos .pos .pos-items:hover::-webkit-scrollbar-thumb,
+body.pulpos-pos .pos .items-area:hover::-webkit-scrollbar-thumb,
+body.pulpos-pos .pos .pos-items-wrapper:hover::-webkit-scrollbar-thumb {
+  background: var(--pos-border);
+  border-radius: 4px;
+}
+body.pulpos-pos .pos .pos-items:hover::-webkit-scrollbar-track,
+body.pulpos-pos .pos .items-area:hover::-webkit-scrollbar-track,
+body.pulpos-pos .pos .pos-items-wrapper:hover::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 body.pulpos-pos .pos .item-card {
   background: var(--pos-card) !important;
   border: 1px solid var(--pos-border) !important;
@@ -142,6 +177,31 @@ body.pulpos-pos .pos .item-card .item-detail {
   flex-direction: column;
   justify-content: flex-start;
   gap: 2px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  body.pulpos-pos .point-of-sale-app {
+    padding: 8px;
+  }
+  body.pulpos-pos .point-of-sale-app section {
+    width: 100% !important;
+    margin: 0 0 12px 0 !important;
+  }
+  body.pulpos-pos .pos .items-section,
+  body.pulpos-pos .pos .items-area,
+  body.pulpos-pos .pos .pos-items {
+    max-height: unset;
+  }
+  body.pulpos-pos .pos .item-card {
+    width: 45%;
+    min-height: 200px;
+  }
+  body.pulpos-pos .pos .item-card .item-display,
+  body.pulpos-pos .pos .item-card .item-img,
+  body.pulpos-pos .pos .item-card img {
+    height: 120px !important;
+  }
 }
 
 body.pulpos-pos .point-of-sale-app .items-selector .filter-section {
