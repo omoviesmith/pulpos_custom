@@ -260,6 +260,8 @@ body.pulpos-pos .point-of-sale-app .totals-section {
 body.pulpos-pos .point-of-sale-app > .customer-cart-container > .cart-container > .abs-cart-container .no-item-wrapper {
   background-color: var(--pos-panel-soft) !important;
   color: var(--pos-text-dim) !important;
+  box-shadow: none !important;
+  border-radius: 12px;
 }
 
 body.pulpos-pos .pos .cart-container .cart-item,
