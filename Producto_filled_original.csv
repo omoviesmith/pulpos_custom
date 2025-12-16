@@ -1,0 +1,16 @@
+item_code,item_name,item_group,stock_uom,is_stock_item,image,description
+SKU-001,Octopus Safety Mask,Productos,Pieza,1,/files/sku-001.jpg,Mascarilla de seguridad Octopus
+SKU-002,Protective Glasses,Productos,Pieza,1,/files/sku-002.jpg,Gafas de seguridad transparentes
+SKU-003,Nitrile Gloves,Productos,Pieza,1,/files/sku-003.jpg,Guantes de nitrilo negros
+SKU-004,Alcohol Gel 500ml,Productos,Pieza,1,/files/sku-004.jpg,Gel antibacterial 500ml
+SKU-005,Infrared Thermometer,Productos,Pieza,1,/files/sku-005.jpg,TermA3metro digital sin contacto
+SKU-006,Face Shield,Productos,Pieza,1,/files/sku-006.jpg,Careta facial completa
+SKU-007,Disposable Gown,Productos,Pieza,1,/files/sku-007.jpg,Bata mAcdica desechable
+SKU-008,Disinfectant Wipes,Productos,Pieza,1,/files/sku-008.jpg,Paquete de toallas desinfectantes
+SKU-009,Disinfectant Spray,Productos,Pieza,1,/files/sku-009.jpg,Spray desinfectante multiusos
+SKU-010,Shoe Covers,Productos,Pieza,1,/files/sku-010.jpg,Cubrezapatos desechables
+SKU-011,Sanitizing Mat,Productos,Pieza,1,/files/sku-011.jpg,Tapete sanitizante de entrada
+SKU-012,Pulse Oximeter,Productos,Pieza,1,/files/sku-012.jpg,OxA-metro digital de dedo
+SKU-013,Rapid Test Kit,Productos,Pieza,1,/files/sku-013.jpg,Kit de prueba rA­pida antA-geno
+SKU-014,Sanitizing Pump,Productos,Pieza,1,/files/sku-014.jpg,Bomba manual para desinfecciA3n
+SKU-015,Mask Box 50u,Productos,Pieza,1,/files/sku-015.jpg,Caja de 50 mascarillas quirA§rgicas
