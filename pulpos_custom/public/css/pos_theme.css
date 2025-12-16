@@ -371,11 +371,16 @@ body.pulpos-pos .pulpos-filter-bar {
   align-items: center;
   gap: 8px;
   position: relative;
-  justify-content: flex-start;
+  justify-content: space-between;
+  width: 100%;
 }
 body.pulpos-pos .pulpos-filter-bar .frappe-control,
 body.pulpos-pos .pulpos-filter-bar .control-input-wrapper {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 220px;
+}
+body.pulpos-pos .pulpos-filter-bar .search-bar {
+  flex: 1 1 auto;
 }
 body.pulpos-pos .pulpos-filter-btn {
   background: var(--pos-panel-soft) !important;
@@ -389,6 +394,7 @@ body.pulpos-pos .pulpos-filter-btn {
   display: inline-flex;
   align-items: center;
   margin-left: auto;
+  margin-right: 0;
 }
 body.pulpos-pos .pulpos-filter-menu {
   position: absolute;
@@ -413,4 +419,20 @@ body.pulpos-pos .point-of-sale-app .item-group-field {
 }
 body.pulpos-pos .pulpos-filter-menu .item-group-field {
   display: block !important;
+}
+
+/* Keep cart item hover visible on light hover background */
+body.pulpos-pos .pos .cart-container .cart-item:hover,
+body.pulpos-pos .pos .basket-items .item-row:hover,
+body.pulpos-pos .point-of-sale-app .cart-container .cart-item:hover {
+  background: var(--pos-panel-soft) !important;
+  color: var(--pos-text) !important;
+}
+body.pulpos-pos .pos .cart-container .cart-item:hover .item-title,
+body.pulpos-pos .pos .cart-container .cart-item:hover .product-name,
+body.pulpos-pos .pos .cart-container .cart-item:hover .item-name,
+body.pulpos-pos .pos .cart-container .cart-item:hover .item-subtitle,
+body.pulpos-pos .pos .basket-items .item-row:hover .item-name,
+body.pulpos-pos .pos .basket-items .item-row:hover .item-subtitle {
+  color: var(--pos-text) !important;
 }
