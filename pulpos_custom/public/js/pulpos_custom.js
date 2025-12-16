@@ -134,14 +134,33 @@
 
 		// Try cur_pos API first (ERPNext POS object)
 		try {
-			if (window.cur_pos && cur_pos.customer_field) {
-				const current = cur_pos.customer_field.get_value();
-				const fallback = (cur_pos.pos_profile_data && cur_pos.pos_profile_data.customer) || DEFAULT_CUSTOMER;
-				if (!current && fallback) {
+			const fallback =
+				(cur_pos?.pos_profile_data && cur_pos.pos_profile_data.customer) ||
+				(cur_pos?.frm && cur_pos.frm.doc && cur_pos.frm.doc.customer) ||
+				DEFAULT_CUSTOMER ||
+				"Walk-in Customer";
+
+			if (window.cur_pos && fallback) {
+				const current = cur_pos.customer_field && cur_pos.customer_field.get_value();
+
+				if (cur_pos.set_customer && !current) {
+					cur_pos.set_customer(fallback);
+					customerSet = true;
+					return;
+				}
+
+				if (cur_pos.customer_field && !current) {
 					cur_pos.customer_field.set_value(fallback);
 					customerSet = true;
 					return;
 				}
+
+				if (cur_pos.frm && cur_pos.frm.set_value && !cur_pos.frm.doc.customer) {
+					cur_pos.frm.set_value("customer", fallback);
+					customerSet = true;
+					return;
+				}
+
 				if (current) {
 					customerSet = true;
 					return;
@@ -206,6 +225,7 @@
 			e.stopPropagation();
 			menu.classList.toggle("show");
 		});
+		menu.addEventListener("click", (e) => e.stopPropagation());
 		document.addEventListener("click", () => {
 			menu.classList.remove("show");
 		});

@@ -370,19 +370,25 @@ body.pulpos-pos .pulpos-filter-bar {
   display: flex;
   align-items: center;
   gap: 8px;
+  position: relative;
+  justify-content: flex-start;
 }
 body.pulpos-pos .pulpos-filter-bar .frappe-control,
 body.pulpos-pos .pulpos-filter-bar .control-input-wrapper {
   flex: 1;
 }
 body.pulpos-pos .pulpos-filter-btn {
-  background: var(--pos-panel-soft);
-  color: var(--pos-text);
-  border: 1px solid var(--pos-border);
-  border-radius: 10px;
-  padding: 8px 10px;
+  background: var(--pos-panel-soft) !important;
+  color: var(--pos-text) !important;
+  border: 1px solid var(--pos-border) !important;
+  border-radius: 10px !important;
+  padding: 8px 12px !important;
   cursor: pointer;
   white-space: nowrap;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
 }
 body.pulpos-pos .pulpos-filter-menu {
   position: absolute;
@@ -399,4 +405,12 @@ body.pulpos-pos .pulpos-filter-menu {
 }
 body.pulpos-pos .pulpos-filter-menu.show {
   display: block;
+}
+
+/* Hide item group control except inside dropdown */
+body.pulpos-pos .point-of-sale-app .item-group-field {
+  display: none !important;
+}
+body.pulpos-pos .pulpos-filter-menu .item-group-field {
+  display: block !important;
 }
