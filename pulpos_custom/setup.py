@@ -13,6 +13,7 @@ def ensure_setup():
 	_create_branches(company)
 	warehouse_map = _create_warehouses(company, root_wh)
 	price_lists = _create_price_lists(currency)
+	_ensure_item_prices(price_lists, currency)
 	_ensure_mode_of_payment("Cash", company)
 	_create_pos_profiles(company, warehouse_map, price_lists)
 
@@ -230,3 +231,39 @@ def _create_pos_profiles(company: str, warehouses: dict, price_lists: dict):
 		doc.append("payments", {"mode_of_payment": "Cash", "default": 1, "account": mop_account})
 
 		doc.insert(ignore_permissions=True)
+
+
+def _ensure_item_prices(price_lists: dict, fallback_currency: str):
+	"""Backfill Item Price rows for all selling price lists using Item.standard_rate."""
+	if not price_lists:
+		return
+
+	selling_lists = [pl_name for pl_name in price_lists.values() if pl_name]
+	if not selling_lists:
+		return
+
+	items = frappe.get_all("Item", fields=["name", "standard_rate", "stock_uom"])
+	if not items:
+		return
+
+	for pl in selling_lists:
+		price_list_currency = (
+			frappe.db.get_value("Price List", pl, "currency") if frappe.db.exists("Price List", pl) else None
+		) or fallback_currency
+
+		for item in items:
+			rate = item.standard_rate or 0
+			if float(rate) <= 0:
+				continue
+			if frappe.db.exists("Item Price", {"item_code": item.name, "price_list": pl}):
+				continue
+
+			doc = frappe.new_doc("Item Price")
+			doc.item_code = item.name
+			doc.price_list = pl
+			doc.price_list_rate = rate
+			doc.currency = price_list_currency
+			doc.selling = 1
+			doc.buying = 0
+			doc.uom = item.stock_uom
+			doc.insert(ignore_permissions=True)
