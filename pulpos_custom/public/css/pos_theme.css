@@ -367,12 +367,17 @@ body.pulpos-pos .pulpos-quick-pay button:hover {
 
 /* Filter bar layout: search + button aligned */
 body.pulpos-pos .pulpos-filter-bar {
-  display: flex;
+  display: flex !important;
   align-items: center;
   gap: 8px;
   position: relative;
   justify-content: space-between;
   width: 100%;
+  grid-template-columns: none !important; /* override POS grid */
+}
+body.pulpos-pos .point-of-sale-app .items-selector .filter-section.pulpos-filter-bar {
+  display: flex !important;
+  grid-template-columns: none !important;
 }
 body.pulpos-pos .pulpos-filter-bar .frappe-control,
 body.pulpos-pos .pulpos-filter-bar .control-input-wrapper {
@@ -381,6 +386,13 @@ body.pulpos-pos .pulpos-filter-bar .control-input-wrapper {
 }
 body.pulpos-pos .pulpos-filter-bar .search-bar {
   flex: 1 1 auto;
+}
+body.pulpos-pos .pulpos-filter-bar .search-field {
+  flex: 1 1 auto;
+  min-width: 240px;
+}
+body.pulpos-pos .pulpos-filter-bar .label {
+  display: none !important;
 }
 body.pulpos-pos .pulpos-filter-btn {
   background: var(--pos-panel-soft) !important;
@@ -425,8 +437,8 @@ body.pulpos-pos .pulpos-filter-menu .item-group-field {
 body.pulpos-pos .pos .cart-container .cart-item:hover,
 body.pulpos-pos .pos .basket-items .item-row:hover,
 body.pulpos-pos .point-of-sale-app .cart-container .cart-item:hover {
-  background: var(--pos-panel-soft) !important;
-  color: var(--pos-text) !important;
+  background: #ffffff !important;
+  color: #0d0d0f !important;
 }
 body.pulpos-pos .pos .cart-container .cart-item:hover .item-title,
 body.pulpos-pos .pos .cart-container .cart-item:hover .product-name,
@@ -434,5 +446,5 @@ body.pulpos-pos .pos .cart-container .cart-item:hover .item-name,
 body.pulpos-pos .pos .cart-container .cart-item:hover .item-subtitle,
 body.pulpos-pos .pos .basket-items .item-row:hover .item-name,
 body.pulpos-pos .pos .basket-items .item-row:hover .item-subtitle {
-  color: var(--pos-text) !important;
+  color: #0d0d0f !important;
 }
