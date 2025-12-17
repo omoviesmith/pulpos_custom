@@ -184,10 +184,11 @@ def _enable_price_and_stock_display():
 
 	# Backfill Website Items to ensure price/stock flags and a warehouse for stock checks
 	fallback_wh = frappe.db.get_value("Warehouse", {"is_group": 0}, "name")
+	pos_default_wh = _get_default_pos_warehouse()
 	web_items = frappe.get_all(
 		"Website Item",
 		filters={"published": 1},
-		fields=["name", "website_warehouse", "show_price", "show_stock_availability"],
+		fields=["name", "item_code", "website_warehouse", "show_price", "show_stock_availability"],
 	)
 	for row in web_items:
 		updates = {}
@@ -195,10 +196,55 @@ def _enable_price_and_stock_display():
 			updates["show_price"] = 1
 		if row.show_stock_availability != 1:
 			updates["show_stock_availability"] = 1
-		if not row.website_warehouse and fallback_wh:
-			updates["website_warehouse"] = fallback_wh
+		if not row.website_warehouse:
+			# Prefer POS warehouse to stay in sync with POS stock, then item defaults/stock, else fallback
+			updates["website_warehouse"] = _pick_warehouse_for_item(
+				row.item_code, pos_default_wh, fallback_wh
+			)
 		if updates:
 			frappe.db.set_value("Website Item", row.name, updates, update_modified=False)
+
+
+def _pick_warehouse_for_item(item_code: str, pos_wh: str | None, fallback: str | None) -> str | None:
+	"""Pick the most sensible warehouse for website availability."""
+	if not item_code:
+		return pos_wh or fallback
+
+	# Align to POS warehouse first so Website stock matches POS stock
+	if pos_wh:
+		return pos_wh
+
+	default_wh = frappe.db.get_value("Item", item_code, "default_warehouse")
+	if default_wh:
+		return default_wh
+
+	# Look for any warehouse with stock
+	stock_wh = frappe.db.sql(
+		"""
+		select warehouse
+		from `tabBin`
+		where item_code = %s and actual_qty > 0
+		order by actual_qty desc
+		limit 1
+		""",
+		item_code,
+	)
+	if stock_wh:
+		return stock_wh[0][0]
+
+	return fallback
+
+
+def _get_default_pos_warehouse() -> str | None:
+	"""Return the default POS Profile warehouse if configured."""
+	pos_profiles = frappe.get_all(
+		"POS Profile",
+		fields=["warehouse", "is_default"],
+		filters={"warehouse": ["is", "set"]},
+		order_by="is_default desc, modified desc",
+		limit_page_length=1,
+	)
+	return pos_profiles[0].warehouse if pos_profiles else None
 
 
 def _create_price_lists(currency: str):

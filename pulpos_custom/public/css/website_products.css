@@ -25,3 +25,19 @@ body[data-path="all-products"] .product-list .row > [class*="col-"] {
     gap: 16px 12px;
   }
 }
+
+/* Show primary actions on hover/focus to match ERPNext default behavior */
+body.product-page .item-card .btn-add-to-cart-list,
+body.product-page .item-card .go-to-cart-grid,
+body.product-page .item-card .like-action {
+  visibility: hidden;
+}
+
+body.product-page .item-card:hover .btn-add-to-cart-list,
+body.product-page .item-card:focus-within .btn-add-to-cart-list,
+body.product-page .item-card:hover .go-to-cart-grid,
+body.product-page .item-card:focus-within .go-to-cart-grid,
+body.product-page .item-card:hover .like-action,
+body.product-page .item-card:focus-within .like-action {
+  visibility: visible;
+}
