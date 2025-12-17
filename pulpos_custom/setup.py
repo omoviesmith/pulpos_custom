@@ -1,4 +1,5 @@
 import frappe
+from pulpos_custom.website_sync import create_website_items
 
 
 def ensure_setup():
@@ -16,6 +17,15 @@ def ensure_setup():
 	_ensure_item_prices(price_lists, currency)
 	_ensure_mode_of_payment("Cash", company)
 	_create_pos_profiles(company, warehouse_map, price_lists)
+
+
+def ensure_setup_and_publish():
+	"""Run baseline setup and publish website items (safe wrapper for after_migrate)."""
+	ensure_setup()
+	try:
+		create_website_items(price_list="FerreTlap Retail", default_warehouse=None, publish=1)
+	except Exception as exc:  # pragma: no cover - defensive log to avoid blocking migrations
+		frappe.log_error(f"Website Item publish failed: {exc}", "pulpos_custom.ensure_setup_and_publish")
 
 
 def _ensure_company(company: str) -> str:

@@ -168,8 +168,8 @@ app_include_js = "/assets/pulpos_custom/js/pulpos_custom.js"
 # 	"Task": "pulpos_custom.task.get_dashboard_data"
 # }
 
-# Run setup after migrations to ensure baseline data
-after_migrate = "pulpos_custom.setup.ensure_setup"
+# Run setup after migrations to ensure baseline data and website items
+after_migrate = "pulpos_custom.setup.ensure_setup_and_publish"
 
 # exempt linked doctypes from being automatically cancelled
 #
