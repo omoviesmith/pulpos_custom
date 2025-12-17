@@ -114,7 +114,7 @@ def _create_warehouses(company: str, parent: str):
 
 def _enable_product_filters():
 	"""Ensure website product filters (sidebar) are visible by seeding filter config."""
-	if not frappe.db.exists("DocType", "E Commerce Settings"):
+	if not frappe.db.exists("DocType", "E Commerce Settings") or not _table_exists("E Commerce Settings"):
 		return
 
 	try:
@@ -125,7 +125,7 @@ def _enable_product_filters():
 	changed = False
 
 	# Turn on field filters (e.g. Item Group, Brand) if disabled
-	if frappe.db.has_column("E Commerce Settings", "enable_field_filters"):
+	if _has_column_safe("E Commerce Settings", "enable_field_filters"):
 		if not settings.enable_field_filters:
 			settings.enable_field_filters = 1
 			changed = True
@@ -141,7 +141,7 @@ def _enable_product_filters():
 			changed = True
 
 	# Turn on attribute filters and seed a few Item Attributes (e.g., Color, Size) if they exist
-	if frappe.db.has_column("E Commerce Settings", "enable_attribute_filters"):
+	if _has_column_safe("E Commerce Settings", "enable_attribute_filters"):
 		if not settings.enable_attribute_filters:
 			settings.enable_attribute_filters = 1
 			changed = True
@@ -178,7 +178,7 @@ def _enable_product_filters():
 
 def _enable_price_and_stock_display():
 	"""Show price and stock on product cards by toggling settings and backfilling Website Items."""
-	if not frappe.db.exists("DocType", "E Commerce Settings"):
+	if not frappe.db.exists("DocType", "E Commerce Settings") or not _table_exists("E Commerce Settings"):
 		return
 
 	try:
@@ -193,7 +193,7 @@ def _enable_price_and_stock_display():
 		"show_stock_availability": 1,
 		"show_actual_qty": 1,
 	}.items():
-		if getattr(settings, field, None) != desired:
+		if _has_column_safe("E Commerce Settings", field) and getattr(settings, field, None) != desired:
 			setattr(settings, field, desired)
 			changed = True
 
@@ -278,7 +278,7 @@ def _pick_warehouse_for_item(
 
 def _ensure_portal_menu():
 	"""Ensure a basic customer portal menu exists (orders, invoices, quotes, issues, communications)."""
-	if not frappe.db.exists("DocType", "Portal Settings"):
+	if not frappe.db.exists("DocType", "Portal Settings") or not _table_exists("Portal Settings"):
 		return
 
 	try:
@@ -326,7 +326,7 @@ def _ensure_portal_menu():
 
 def _enable_signup():
 	"""Allow self-service signup on the website login page."""
-	if not frappe.db.exists("DocType", "Website Settings"):
+	if not frappe.db.exists("DocType", "Website Settings") or not _table_exists("Website Settings"):
 		return
 
 	try:
@@ -336,15 +336,15 @@ def _enable_signup():
 
 	changed = False
 	# Field name varies by version; check both enable and disable flags.
-	if frappe.db.has_column("Website Settings", "disable_signup"):
+	if _has_column_safe("Website Settings", "disable_signup"):
 		if ws.disable_signup:
 			ws.disable_signup = 0
 			changed = True
-	if frappe.db.has_column("Website Settings", "allow_guest_signup"):
+	if _has_column_safe("Website Settings", "allow_guest_signup"):
 		if not ws.allow_guest_signup:
 			ws.allow_guest_signup = 1
 			changed = True
-	elif frappe.db.has_column("Website Settings", "enable_signup"):
+	elif _has_column_safe("Website Settings", "enable_signup"):
 		if not ws.enable_signup:
 			ws.enable_signup = 1
 			changed = True
@@ -390,6 +390,22 @@ def _has_stock(item_code: str, warehouse: str) -> bool:
 	)
 	try:
 		return float(qty or 0) > 0
+	except Exception:
+		return False
+
+
+def _has_column_safe(doctype: str, column: str) -> bool:
+	"""Safely check column existence, guarding against missing tables."""
+	try:
+		return frappe.db.has_column(doctype, column)
+	except Exception:
+		return False
+
+
+def _table_exists(doctype: str) -> bool:
+	"""Return True if the underlying table for the DocType exists."""
+	try:
+		return frappe.db.table_exists(f"tab{doctype}")
 	except Exception:
 		return False
 
