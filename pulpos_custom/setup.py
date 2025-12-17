@@ -252,16 +252,16 @@ def _pick_warehouse_for_item(
 
 def _get_default_pos_warehouse() -> str | None:
 	"""Return the default POS Profile warehouse if configured."""
-	# Prefer the configured profile “POS FerreTlap Main” if it exists and has a warehouse
-	preferred = frappe.db.get_value("POS Profile", "POS FerreTlap Main", "warehouse")
+	# Prefer the configured profile "POS FerreTlap Main" if it exists and has a warehouse
+	preferred = frappe.db.get_value("POS Profile", {"name": "POS FerreTlap Main"}, "warehouse")
 	if preferred:
 		return preferred
 
 	pos_profiles = frappe.get_all(
 		"POS Profile",
-		fields=["warehouse", "is_default"],
+		fields=["warehouse"],
 		filters={"warehouse": ["is", "set"]},
-		order_by="is_default desc, modified desc",
+		order_by="modified desc",
 		limit_page_length=1,
 	)
 	return pos_profiles[0].warehouse if pos_profiles else None

@@ -3,10 +3,16 @@ import frappe
 
 def execute():
 	"""Force website items to use the POS warehouse so stock matches POS."""
-	pos_wh = (
-		frappe.db.get_value("POS Profile", {"name": "POS FerreTlap Main"}, "warehouse")
-		or frappe.db.get_value("POS Profile", {"is_default": 1}, "warehouse")
-	)
+	pos_wh = frappe.db.get_value("POS Profile", {"name": "POS FerreTlap Main"}, "warehouse")
+	if not pos_wh:
+		pos_profiles = frappe.get_all(
+			"POS Profile",
+			fields=["warehouse"],
+			filters={"warehouse": ["is", "set"]},
+			order_by="modified desc",
+			limit_page_length=1,
+		)
+		pos_wh = pos_profiles[0].warehouse if pos_profiles else None
 
 	# Fallbacks if POS Profile warehouse is missing
 	fallback_wh = (
