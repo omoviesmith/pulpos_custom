@@ -25,6 +25,7 @@ def ensure_setup_and_publish():
 	_enable_product_filters()
 	_enable_price_and_stock_display()
 	_ensure_portal_menu()
+	_enable_signup()
 	try:
 		create_website_items(price_list="FerreTlap Retail", default_warehouse=None, publish=1)
 	except Exception as exc:  # pragma: no cover - defensive log to avoid blocking migrations
@@ -321,6 +322,46 @@ def _ensure_portal_menu():
 
 	if changed:
 		settings.save(ignore_permissions=True)
+
+
+def _enable_signup():
+	"""Allow self-service signup on the website login page."""
+	if not frappe.db.exists("DocType", "Website Settings"):
+		return
+
+	try:
+		ws = frappe.get_single("Website Settings")
+	except Exception:
+		return
+
+	changed = False
+	# Field name varies by version; check both enable and disable flags.
+	if frappe.db.has_column("Website Settings", "disable_signup"):
+		if ws.disable_signup:
+			ws.disable_signup = 0
+			changed = True
+	if frappe.db.has_column("Website Settings", "allow_guest_signup"):
+		if not ws.allow_guest_signup:
+			ws.allow_guest_signup = 1
+			changed = True
+	elif frappe.db.has_column("Website Settings", "enable_signup"):
+		if not ws.enable_signup:
+			ws.enable_signup = 1
+			changed = True
+
+	if changed:
+		ws.save(ignore_permissions=True)
+
+	# Also ensure site_config does not block signup
+	try:
+		from frappe.installer import update_site_config
+
+		site_config = frappe.get_site_config()
+		if not site_config.get("allow_signup", True):
+			update_site_config("allow_signup", 1)
+	except Exception:
+		# best effort; do not block setup on config write issues
+		pass
 
 
 def _get_default_pos_warehouse() -> str | None:
