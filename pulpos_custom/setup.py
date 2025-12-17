@@ -22,6 +22,7 @@ def ensure_setup():
 def ensure_setup_and_publish():
 	"""Run baseline setup and publish website items (safe wrapper for after_migrate)."""
 	ensure_setup()
+	_enable_product_filters()
 	try:
 		create_website_items(price_list="FerreTlap Retail", default_warehouse=None, publish=1)
 	except Exception as exc:  # pragma: no cover - defensive log to avoid blocking migrations
@@ -101,11 +102,51 @@ def _create_warehouses(company: str, parent: str):
 		doc = frappe.new_doc("Warehouse")
 		doc.warehouse_name = wh
 		doc.company = company
-		doc.parent_warehouse = parent
-		doc.is_group = 0
-		doc.insert(ignore_permissions=True)
-		created[wh] = doc.name
+	doc.parent_warehouse = parent
+	doc.is_group = 0
+	doc.insert(ignore_permissions=True)
+	created[wh] = doc.name
 	return created
+
+
+def _enable_product_filters():
+	"""Ensure website product filters (sidebar) are visible by seeding filter config."""
+	if not frappe.db.exists("DocType", "E Commerce Settings"):
+		return
+
+	try:
+		settings = frappe.get_single("E Commerce Settings")
+	except Exception:
+		return
+
+	changed = False
+
+	# Turn on field filters (e.g. Item Group, Brand) if disabled
+	if not settings.enable_field_filters:
+		settings.enable_field_filters = 1
+		changed = True
+
+	def has_filter_field(fieldname: str) -> bool:
+		return any(getattr(row, "fieldname", None) == fieldname for row in settings.get("filter_fields", []))
+
+	# Seed common filters if missing and the Website Item doctype supports them
+	web_meta = frappe.get_meta("Website Item")
+	for fieldname in ("item_group", "brand"):
+		if web_meta.has_field(fieldname) and not has_filter_field(fieldname):
+			settings.append("filter_fields", {"fieldname": fieldname})
+			changed = True
+
+	# Make sure linked Item Groups are allowed to show on the website so they appear as filter options
+	item_groups = frappe.get_all(
+		"Website Item", filters={"published": 1}, pluck="item_group", distinct=True
+	)
+	for ig in item_groups:
+		if ig and frappe.db.exists("Item Group", ig):
+			if frappe.db.get_value("Item Group", ig, "show_in_website") != 1:
+				frappe.db.set_value("Item Group", ig, "show_in_website", 1)
+
+	if changed:
+		settings.save(ignore_permissions=True)
 
 
 def _create_price_lists(currency: str):
