@@ -29,20 +29,21 @@ def create_website_items(
 	)
 	price_map = {row.item_code: float(row.price_list_rate or 0) for row in price_list_rates}
 
-	items = frappe.get_all(
-		"Item",
-		fields=[
-			"name",
-			"item_name",
-			"item_group",
-			"image",
-			"website_image",
-			"description",
-			"default_warehouse",
-			"standard_rate",
-			"disabled",
-		],
-	)
+	meta = frappe.get_meta("Item")
+	fields = [
+		"name",
+		"item_name",
+		"item_group",
+		"image",
+		"description",
+		"default_warehouse",
+		"standard_rate",
+		"disabled",
+	]
+	if meta.has_field("website_image"):
+		fields.append("website_image")
+
+	items = frappe.get_all("Item", fields=fields)
 
 	created = []
 	skipped = []
@@ -56,7 +57,7 @@ def create_website_items(
 			skipped.append((item.name, "exists"))
 			continue
 
-		price = price_map.get(item.name) or float(item.standard_rate or 0)
+		price = price_map.get(item.name) or float(getattr(item, "standard_rate", 0) or 0)
 		if price <= 0:
 			skipped.append((item.name, "no price"))
 			continue
@@ -69,8 +70,9 @@ def create_website_items(
 		doc.show_price = 1
 		doc.show_stock_availability = 1
 		doc.website_warehouse = default_warehouse or item.default_warehouse
-		doc.website_image = item.website_image or item.image
-		doc.thumbnail = item.website_image or item.image
+		website_img = getattr(item, "website_image", None) or item.image
+		doc.website_image = website_img
+		doc.thumbnail = website_img
 		doc.description = item.description
 		doc.save(ignore_permissions=True)
 		created.append(item.name)
