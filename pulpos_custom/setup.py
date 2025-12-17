@@ -183,8 +183,9 @@ def _enable_price_and_stock_display():
 		return
 
 	# Backfill Website Items to ensure price/stock flags and a warehouse for stock checks
-	fallback_wh = frappe.db.get_value("Warehouse", {"is_group": 0}, "name")
+	# Default to the explicitly requested POS Profile warehouse if present
 	pos_default_wh = _get_default_pos_warehouse()
+	fallback_wh = pos_default_wh or frappe.db.get_value("Warehouse", {"is_group": 0}, "name")
 	web_items = frappe.get_all(
 		"Website Item",
 		filters={"published": 1},
@@ -196,29 +197,33 @@ def _enable_price_and_stock_display():
 			updates["show_price"] = 1
 		if row.show_stock_availability != 1:
 			updates["show_stock_availability"] = 1
-		if not row.website_warehouse:
-			# Prefer POS warehouse to stay in sync with POS stock, then item defaults/stock, else fallback
-			updates["website_warehouse"] = _pick_warehouse_for_item(
-				row.item_code, pos_default_wh, fallback_wh
-			)
+		best_wh = _pick_warehouse_for_item(
+			row.item_code, row.website_warehouse, pos_default_wh, fallback_wh
+		)
+		if best_wh and best_wh != row.website_warehouse:
+			updates["website_warehouse"] = best_wh
 		if updates:
 			frappe.db.set_value("Website Item", row.name, updates, update_modified=False)
 
 
-def _pick_warehouse_for_item(item_code: str, pos_wh: str | None, fallback: str | None) -> str | None:
-	"""Pick the most sensible warehouse for website availability."""
+def _pick_warehouse_for_item(
+	item_code: str, current_wh: str | None, pos_wh: str | None, fallback: str | None
+) -> str | None:
+	"""Pick a warehouse that actually has stock, preferring current -> POS -> default -> any stocked -> fallback."""
 	if not item_code:
-		return pos_wh or fallback
+		return current_wh or pos_wh or fallback
 
-	# Align to POS warehouse first so Website stock matches POS stock
+	candidates = []
+	if current_wh:
+		candidates.append(current_wh)
 	if pos_wh:
-		return pos_wh
+		candidates.append(pos_wh)
 
 	default_wh = frappe.db.get_value("Item", item_code, "default_warehouse")
 	if default_wh:
-		return default_wh
+		candidates.append(default_wh)
 
-	# Look for any warehouse with stock
+	# Add any warehouse with stock (highest first)
 	stock_wh = frappe.db.sql(
 		"""
 		select warehouse
@@ -230,13 +235,27 @@ def _pick_warehouse_for_item(item_code: str, pos_wh: str | None, fallback: str |
 		item_code,
 	)
 	if stock_wh:
-		return stock_wh[0][0]
+		candidates.append(stock_wh[0][0])
 
-	return fallback
+	# Finally fallback
+	if fallback:
+		candidates.append(fallback)
+
+	for wh in candidates:
+		if wh and _has_stock(item_code, wh):
+			return wh
+
+	# No stock anywhere, keep existing or fallback for consistency
+	return current_wh or pos_wh or default_wh or fallback
 
 
 def _get_default_pos_warehouse() -> str | None:
 	"""Return the default POS Profile warehouse if configured."""
+	# Prefer the configured profile “POS FerreTlap Main” if it exists and has a warehouse
+	preferred = frappe.db.get_value("POS Profile", "POS FerreTlap Main", "warehouse")
+	if preferred:
+		return preferred
+
 	pos_profiles = frappe.get_all(
 		"POS Profile",
 		fields=["warehouse", "is_default"],
@@ -245,6 +264,19 @@ def _get_default_pos_warehouse() -> str | None:
 		limit_page_length=1,
 	)
 	return pos_profiles[0].warehouse if pos_profiles else None
+
+
+def _has_stock(item_code: str, warehouse: str) -> bool:
+	"""Check if a Bin has positive qty for item/warehouse."""
+	if not item_code or not warehouse:
+		return False
+	qty = frappe.db.get_value(
+		"Bin", {"item_code": item_code, "warehouse": warehouse}, "actual_qty"
+	)
+	try:
+		return float(qty or 0) > 0
+	except Exception:
+		return False
 
 
 def _create_price_lists(currency: str):
