@@ -24,6 +24,7 @@ def ensure_setup_and_publish():
 	ensure_setup()
 	_enable_product_filters()
 	_enable_price_and_stock_display()
+	_ensure_portal_menu()
 	try:
 		create_website_items(price_list="FerreTlap Retail", default_warehouse=None, publish=1)
 	except Exception as exc:  # pragma: no cover - defensive log to avoid blocking migrations
@@ -272,6 +273,54 @@ def _pick_warehouse_for_item(
 
 	# No stock anywhere, keep existing or fallback for consistency
 	return current_wh or pos_wh or default_wh or fallback
+
+
+def _ensure_portal_menu():
+	"""Ensure a basic customer portal menu exists (orders, invoices, quotes, issues, communications)."""
+	if not frappe.db.exists("DocType", "Portal Settings"):
+		return
+
+	try:
+		settings = frappe.get_single("Portal Settings")
+	except Exception:
+		return
+
+	changed = False
+
+	# Turn on portal if field exists
+	if frappe.db.has_column("Portal Settings", "enable_portal"):
+		if not settings.enable_portal:
+			settings.enable_portal = 1
+			changed = True
+
+	# Target menu items (title, route)
+	menu_items = [
+		("Orders", "/orders"),
+		("Invoices", "/invoices"),
+		("Quotations", "/quotations"),
+		("Issues", "/issues"),
+		("Communications", "/communications"),
+	]
+
+	def has_menu(route: str) -> bool:
+		return any(getattr(row, "route", None) == route for row in settings.get("menu_items", []))
+
+	for title, route in menu_items:
+		if has_menu(route):
+			continue
+		item = {
+			"title": title,
+			"route": route,
+			"enabled": 1,
+		}
+		# Assign Customer role if the child table has role field
+		if frappe.db.has_column("Portal Menu Item", "role"):
+			item["role"] = "Customer"
+		settings.append("menu_items", item)
+		changed = True
+
+	if changed:
+		settings.save(ignore_permissions=True)
 
 
 def _get_default_pos_warehouse() -> str | None:
