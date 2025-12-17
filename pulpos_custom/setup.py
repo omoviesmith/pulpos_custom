@@ -23,6 +23,7 @@ def ensure_setup_and_publish():
 	"""Run baseline setup and publish website items (safe wrapper for after_migrate)."""
 	ensure_setup()
 	_enable_product_filters()
+	_enable_price_and_stock_display()
 	try:
 		create_website_items(price_list="FerreTlap Retail", default_warehouse=None, publish=1)
 	except Exception as exc:  # pragma: no cover - defensive log to avoid blocking migrations
@@ -147,6 +148,57 @@ def _enable_product_filters():
 
 	if changed:
 		settings.save(ignore_permissions=True)
+
+
+def _enable_price_and_stock_display():
+	"""Show price and stock on product cards by toggling settings and backfilling Website Items."""
+	if not frappe.db.exists("DocType", "E Commerce Settings"):
+		return
+
+	try:
+		settings = frappe.get_single("E Commerce Settings")
+		web_items_exist = frappe.db.exists("Website Item")
+	except Exception:
+		return
+
+	changed = False
+	for field, desired in {
+		"show_price": 1,
+		"show_stock_availability": 1,
+		"show_actual_qty": 1,
+	}.items():
+		if getattr(settings, field, None) != desired:
+			setattr(settings, field, desired)
+			changed = True
+
+	# Align price list to the one we seed (if present)
+	if frappe.db.exists("Price List", "FerreTlap Retail") and settings.price_list != "FerreTlap Retail":
+		settings.price_list = "FerreTlap Retail"
+		changed = True
+
+	if changed:
+		settings.save(ignore_permissions=True)
+
+	if not web_items_exist:
+		return
+
+	# Backfill Website Items to ensure price/stock flags and a warehouse for stock checks
+	fallback_wh = frappe.db.get_value("Warehouse", {"is_group": 0}, "name")
+	web_items = frappe.get_all(
+		"Website Item",
+		filters={"published": 1},
+		fields=["name", "website_warehouse", "show_price", "show_stock_availability"],
+	)
+	for row in web_items:
+		updates = {}
+		if row.show_price != 1:
+			updates["show_price"] = 1
+		if row.show_stock_availability != 1:
+			updates["show_stock_availability"] = 1
+		if not row.website_warehouse and fallback_wh:
+			updates["website_warehouse"] = fallback_wh
+		if updates:
+			frappe.db.set_value("Website Item", row.name, updates, update_modified=False)
 
 
 def _create_price_lists(currency: str):
