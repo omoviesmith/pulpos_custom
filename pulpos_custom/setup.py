@@ -123,9 +123,10 @@ def _enable_product_filters():
 	changed = False
 
 	# Turn on field filters (e.g. Item Group, Brand) if disabled
-	if not settings.enable_field_filters:
-		settings.enable_field_filters = 1
-		changed = True
+	if frappe.db.has_column("E Commerce Settings", "enable_field_filters"):
+		if not settings.enable_field_filters:
+			settings.enable_field_filters = 1
+			changed = True
 
 	def has_filter_field(fieldname: str) -> bool:
 		return any(getattr(row, "fieldname", None) == fieldname for row in settings.get("filter_fields", []))
@@ -136,6 +137,29 @@ def _enable_product_filters():
 		if web_meta.has_field(fieldname) and not has_filter_field(fieldname):
 			settings.append("filter_fields", {"fieldname": fieldname})
 			changed = True
+
+	# Turn on attribute filters and seed a few Item Attributes (e.g., Color, Size) if they exist
+	if frappe.db.has_column("E Commerce Settings", "enable_attribute_filters"):
+		if not settings.enable_attribute_filters:
+			settings.enable_attribute_filters = 1
+			changed = True
+
+	def has_attribute_filter(attribute: str) -> bool:
+		return any(
+			getattr(row, "attribute", None) == attribute for row in settings.get("filter_attributes", [])
+		)
+
+	if frappe.db.exists("DocType", "Item Attribute"):
+		# Prefer common attributes; fall back to whatever exists
+		preferred_attrs = ["Color", "Colour", "Size"]
+		existing_attrs = [row.name for row in frappe.get_all("Item Attribute", pluck="name")]
+		for attr in preferred_attrs + existing_attrs:
+			if attr in existing_attrs and not has_attribute_filter(attr):
+				settings.append("filter_attributes", {"attribute": attr})
+				changed = True
+				# limit seeding to a few to avoid clutter
+				if len(settings.get("filter_attributes", [])) >= 3:
+					break
 
 	# Make sure linked Item Groups are allowed to show on the website so they appear as filter options
 	item_groups = frappe.get_all(
