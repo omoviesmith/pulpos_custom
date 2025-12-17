@@ -193,9 +193,9 @@ def _enable_price_and_stock_display():
 	)
 	for row in web_items:
 		updates = {}
-		if row.show_price != 1:
+		if frappe.db.has_column("Website Item", "show_price") and row.show_price != 1:
 			updates["show_price"] = 1
-		if row.show_stock_availability != 1:
+		if frappe.db.has_column("Website Item", "show_stock_availability") and row.show_stock_availability != 1:
 			updates["show_stock_availability"] = 1
 		# Force website warehouse to the POS warehouse when available to keep stock in sync
 		best_wh = pos_default_wh or _pick_warehouse_for_item(

@@ -41,12 +41,13 @@ def execute():
 		if row.website_warehouse and _has_stock(row.item_code, row.website_warehouse):
 			continue
 
-		frappe.db.set_value(
-			"Website Item",
-			row.name,
-			{"website_warehouse": target_wh, "show_stock_availability": 1, "show_price": 1},
-			update_modified=False,
-		)
+		payload = {"website_warehouse": target_wh}
+		if frappe.db.has_column("Website Item", "show_stock_availability"):
+			payload["show_stock_availability"] = 1
+		if frappe.db.has_column("Website Item", "show_price"):
+			payload["show_price"] = 1
+
+		frappe.db.set_value("Website Item", row.name, payload, update_modified=False)
 
 
 def _has_stock(item_code: str, warehouse: str) -> bool:
