@@ -1,15 +1,16 @@
 /* Force 3-column-ish grid on all-products page */
 /* Force responsive grid (3+ columns on desktop if space allows) */
-body[data-path="/all-products"] #products-grid-area,
-body[data-path="/all-products"] .product-list .row,
-body[data-path="/all-products"] .product-list .row.items {
+/* Use the page's actual data-path (all-products) so our grid overrides apply */
+body[data-path="all-products"] #products-grid-area,
+body[data-path="all-products"] .product-list .row,
+body[data-path="all-products"] .product-list .row.items {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 24px 20px;
 }
 
-body[data-path="/all-products"] #products-grid-area > [class*="col-"],
-body[data-path="/all-products"] .product-list .row > [class*="col-"] {
+body[data-path="all-products"] #products-grid-area > [class*="col-"],
+body[data-path="all-products"] .product-list .row > [class*="col-"] {
   width: auto !important;
   max-width: none !important;
   float: none !important;
@@ -17,9 +18,9 @@ body[data-path="/all-products"] .product-list .row > [class*="col-"] {
 }
 
 @media (max-width: 768px) {
-  body[data-path="/all-products"] #products-grid-area,
-  body[data-path="/all-products"] .product-list .row,
-  body[data-path="/all-products"] .product-list .row.items {
+  body[data-path="all-products"] #products-grid-area,
+  body[data-path="all-products"] .product-list .row,
+  body[data-path="all-products"] .product-list .row.items {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 16px 12px;
   }
