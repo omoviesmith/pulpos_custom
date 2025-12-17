@@ -30,18 +30,13 @@ def create_website_items(
 	price_map = {row.item_code: float(row.price_list_rate or 0) for row in price_list_rates}
 
 	meta = frappe.get_meta("Item")
-	fields = [
-		"name",
-		"item_name",
-		"item_group",
-		"image",
-		"description",
-		"default_warehouse",
-		"standard_rate",
-		"disabled",
-	]
+	fields = ["name", "item_name", "item_group", "image", "description", "standard_rate", "disabled"]
 	if meta.has_field("website_image"):
 		fields.append("website_image")
+
+	has_default_warehouse_col = frappe.db.has_column("Item", "default_warehouse")
+	if has_default_warehouse_col:
+		fields.append("default_warehouse")
 
 	items = frappe.get_all("Item", fields=fields)
 
@@ -69,7 +64,9 @@ def create_website_items(
 		doc.published = publish
 		doc.show_price = 1
 		doc.show_stock_availability = 1
-		doc.website_warehouse = default_warehouse or item.default_warehouse
+		doc.website_warehouse = default_warehouse or (
+			getattr(item, "default_warehouse", None) if has_default_warehouse_col else None
+		)
 		website_img = getattr(item, "website_image", None) or item.image
 		doc.website_image = website_img
 		doc.thumbnail = website_img
