@@ -17,4 +17,4 @@ MIT
 
 - Create Website Items for Items that have a price/image:  
   `bench --site <site> execute "pulpos_custom.website_sync.create_website_items"`  
-  Options (optional): `price_list="FerreTlap Retail"` (default), `default_warehouse="<Warehouse>"`, `publish=1`.
+  Options (optional): `price_list="FerreTlap Retail"` (default), `default_warehouse="<Warehouse>"`, `publish=1`...
