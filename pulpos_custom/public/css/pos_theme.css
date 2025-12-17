@@ -439,6 +439,7 @@ body.pulpos-pos .pos .basket-items .item-row:hover,
 body.pulpos-pos .point-of-sale-app .cart-container .cart-item:hover {
   background: #ffffff !important;
   color: #0d0d0f !important;
+  --pos-text: #0d0d0f !important; /* override light text within cart item on hover */
 }
 body.pulpos-pos .pos .cart-container .cart-item:hover .item-title,
 body.pulpos-pos .pos .cart-container .cart-item:hover .product-name,
@@ -446,5 +447,17 @@ body.pulpos-pos .pos .cart-container .cart-item:hover .item-name,
 body.pulpos-pos .pos .cart-container .cart-item:hover .item-subtitle,
 body.pulpos-pos .pos .basket-items .item-row:hover .item-name,
 body.pulpos-pos .pos .basket-items .item-row:hover .item-subtitle {
+  color: #0d0d0f !important;
+}
+body.pulpos-pos .pos .cart-container .cart-item:hover *,
+body.pulpos-pos .pos .cart-container .cart-item:hover .qty,
+body.pulpos-pos .pos .cart-container .cart-item:hover .amount,
+body.pulpos-pos .pos .cart-container .cart-item:hover .rate,
+body.pulpos-pos .pos .cart-container .cart-item:hover .discount,
+body.pulpos-pos .pos .cart-container .cart-item:hover .item-qty,
+body.pulpos-pos .pos .cart-container .cart-item:hover .item-amount,
+body.pulpos-pos .pos .cart-container .cart-item:hover .flex,
+body.pulpos-pos .pos .cart-container .cart-item:hover span,
+body.pulpos-pos .pos .cart-container .cart-item:hover div {
   color: #0d0d0f !important;
 }
