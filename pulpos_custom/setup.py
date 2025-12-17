@@ -102,10 +102,10 @@ def _create_warehouses(company: str, parent: str):
 		doc = frappe.new_doc("Warehouse")
 		doc.warehouse_name = wh
 		doc.company = company
-	doc.parent_warehouse = parent
-	doc.is_group = 0
-	doc.insert(ignore_permissions=True)
-	created[wh] = doc.name
+		doc.parent_warehouse = parent
+		doc.is_group = 0
+		doc.insert(ignore_permissions=True)
+		created[wh] = doc.name
 	return created
 
 
