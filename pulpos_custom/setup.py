@@ -197,7 +197,8 @@ def _enable_price_and_stock_display():
 			updates["show_price"] = 1
 		if row.show_stock_availability != 1:
 			updates["show_stock_availability"] = 1
-		best_wh = _pick_warehouse_for_item(
+		# Force website warehouse to the POS warehouse when available to keep stock in sync
+		best_wh = pos_default_wh or _pick_warehouse_for_item(
 			row.item_code, row.website_warehouse, pos_default_wh, fallback_wh
 		)
 		if best_wh and best_wh != row.website_warehouse:
