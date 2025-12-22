@@ -68,6 +68,10 @@ jobs:
             fi
 
             cd "${BENCH_PATH}"
+            # Ensure esbuild binaries are executable (can get clobbered by chmods)
+            find "${BENCH_PATH}/apps" -path "*node_modules/esbuild-*/bin/esbuild" -exec chmod +x {} + || true
+            find "${BENCH_PATH}/apps" -path "*node_modules/.bin/esbuild" -exec chmod +x {} + || true
+
             bench build --app "${APP_NAME}"
             # bench migrate does not take --app in newer bench versions
             bench --site "${SITE_NAME}" migrate
