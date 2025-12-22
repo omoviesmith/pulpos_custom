@@ -370,6 +370,7 @@ body.pulpos-pos .pulpos-filter-bar {
   display: flex !important;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
   position: relative;
   justify-content: space-between;
   width: 100%;
@@ -423,6 +424,49 @@ body.pulpos-pos .pulpos-filter-menu {
 }
 body.pulpos-pos .pulpos-filter-menu.show {
   display: block;
+}
+
+/* Pagination (rows-per-page) */
+body.pulpos-pos .pulpos-pagination-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+body.pulpos-pos .pulpos-pagination-controls .pulpos-rows-label {
+  color: var(--pos-text-dim);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+body.pulpos-pos .pulpos-pagination-controls select.pulpos-rows-select {
+  background: var(--pos-panel-soft) !important;
+  color: var(--pos-text) !important;
+  border: 1px solid var(--pos-border) !important;
+  border-radius: 8px;
+  height: 34px;
+  padding: 4px 8px;
+}
+body.pulpos-pos .pulpos-pagination-controls .pulpos-pagination-btn {
+  background: var(--pos-panel-soft) !important;
+  color: var(--pos-text) !important;
+  border: 1px solid var(--pos-border) !important;
+  border-radius: 10px !important;
+  padding: 8px 12px !important;
+  cursor: pointer;
+  white-space: nowrap;
+  height: 34px;
+  line-height: 16px;
+}
+body.pulpos-pos .pulpos-pagination-controls .pulpos-pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+body.pulpos-pos .pulpos-pagination-controls .pulpos-page-indicator {
+  color: var(--pos-text);
+  font-weight: 600;
+  min-width: 60px;
+  text-align: center;
 }
 
 /* Hide item group control except inside dropdown */

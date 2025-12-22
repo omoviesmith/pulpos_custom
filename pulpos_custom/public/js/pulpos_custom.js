@@ -70,6 +70,14 @@
 	let customerSet = false;
 	const DEFAULT_CUSTOMER = "Publico General - 1";
 	let filterButtonAdded = false;
+	let paginationControlsAdded = false;
+	const paginationState = {
+		currentPage: 1,
+		rowsPerPage: Number(localStorage.getItem("pulpos_rows_per_page") || 2) || 2,
+		container: null,
+		observer: null,
+	};
+	const ROWS_PER_PAGE_OPTIONS = [1, 2, 3, 4];
 
 	const isPosRoute = () => {
 		const r = frappe.get_route && frappe.get_route();
@@ -127,6 +135,8 @@
 		injectQuickPay();
 		setDefaultCustomer();
 		addFilterButton();
+		initPagination();
+		applyPagination();
 	};
 
 	const setDefaultCustomer = () => {
@@ -233,5 +243,151 @@
 		filterSection.appendChild(btn);
 		filterSection.appendChild(menu);
 		filterButtonAdded = true;
+	};
+
+	const getItemsContainer = () =>
+		document.querySelector(".point-of-sale-app .pos-items-wrapper") ||
+		document.querySelector(".pos .pos-items") ||
+		document.querySelector(".pos .items-area") ||
+		document.querySelector(".point-of-sale-app .items-area");
+
+	const collectItemCards = (container) =>
+		Array.from(
+			container.querySelectorAll(
+				".item-card, .pos-item-card, .pos-item, .item-wrapper, .item-box, .product-item"
+			)
+		).filter((el) => el && el.parentElement);
+
+	const calcItemsPerRow = (items) => {
+		if (!items.length) return 1;
+		const firstTop = items[0].getBoundingClientRect().top;
+		const perRow = items.filter(
+			(el) => Math.abs(el.getBoundingClientRect().top - firstTop) < 2
+		).length;
+		return perRow || 1;
+	};
+
+	const ensurePaginationControls = () => {
+		if (paginationControlsAdded) return;
+		const filterSection = document.querySelector(".point-of-sale-app .items-selector .filter-section");
+		if (!filterSection) return;
+
+		const wrap = document.createElement("div");
+		wrap.className = "pulpos-pagination-controls";
+
+		const label = document.createElement("span");
+		label.className = "pulpos-rows-label";
+		label.textContent = "Rows per page";
+
+		const select = document.createElement("select");
+		select.className = "pulpos-rows-select";
+		ROWS_PER_PAGE_OPTIONS.forEach((opt) => {
+			const o = document.createElement("option");
+			o.value = opt;
+			o.textContent = opt;
+			if (opt === paginationState.rowsPerPage) o.selected = true;
+			select.appendChild(o);
+		});
+		select.addEventListener("change", () => {
+			paginationState.rowsPerPage = Number(select.value) || 1;
+			localStorage.setItem("pulpos_rows_per_page", paginationState.rowsPerPage);
+			paginationState.currentPage = 1;
+			applyPagination();
+		});
+
+		const prev = document.createElement("button");
+		prev.type = "button";
+		prev.className = "pulpos-pagination-btn pulpos-page-prev";
+		prev.textContent = "Prev";
+		prev.addEventListener("click", () => {
+			if (paginationState.currentPage > 1) {
+				paginationState.currentPage -= 1;
+				applyPagination();
+			}
+		});
+
+		const pageIndicator = document.createElement("span");
+		pageIndicator.className = "pulpos-page-indicator";
+		pageIndicator.textContent = "1 / 1";
+
+		const next = document.createElement("button");
+		next.type = "button";
+		next.className = "pulpos-pagination-btn pulpos-page-next";
+		next.textContent = "Next";
+		next.addEventListener("click", () => {
+			paginationState.currentPage += 1;
+			applyPagination();
+		});
+
+		wrap.appendChild(label);
+		wrap.appendChild(select);
+		wrap.appendChild(prev);
+		wrap.appendChild(pageIndicator);
+		wrap.appendChild(next);
+		filterSection.appendChild(wrap);
+		paginationControlsAdded = true;
+	};
+
+	const updatePaginationControls = (page, totalPages) => {
+		const wrap = document.querySelector(".pulpos-pagination-controls");
+		if (!wrap) return;
+		const indicator = wrap.querySelector(".pulpos-page-indicator");
+		if (indicator) indicator.textContent = `${page} / ${totalPages}`;
+		const prev = wrap.querySelector(".pulpos-page-prev");
+		const next = wrap.querySelector(".pulpos-page-next");
+		if (prev) prev.disabled = page <= 1;
+		if (next) next.disabled = page >= totalPages;
+		const select = wrap.querySelector(".pulpos-rows-select");
+		if (select && Number(select.value) !== paginationState.rowsPerPage) {
+			select.value = paginationState.rowsPerPage;
+		}
+	};
+
+	const applyPagination = () => {
+		if (!isPosRoute()) return;
+		const container = getItemsContainer();
+		if (!container) return;
+
+		ensurePaginationControls();
+		if (!paginationControlsAdded) return;
+
+		const items = collectItemCards(container);
+		if (!items.length) {
+			updatePaginationControls(1, 1);
+			return;
+		}
+
+		const itemsPerRow = calcItemsPerRow(items);
+		const rowsPerPage = Math.max(1, paginationState.rowsPerPage);
+		const itemsPerPage = Math.max(1, itemsPerRow * rowsPerPage);
+		const totalPages = Math.max(1, Math.ceil(items.length / itemsPerPage));
+
+		if (paginationState.currentPage > totalPages) paginationState.currentPage = totalPages;
+		if (paginationState.currentPage < 1) paginationState.currentPage = 1;
+
+		const start = (paginationState.currentPage - 1) * itemsPerPage;
+		const end = start + itemsPerPage;
+
+		items.forEach((el, idx) => {
+			el.style.display = idx >= start && idx < end ? "" : "none";
+		});
+
+		updatePaginationControls(paginationState.currentPage, totalPages);
+	};
+
+	const initPagination = () => {
+		if (!isPosRoute()) return;
+		const container = getItemsContainer();
+		if (!container) return;
+		ensurePaginationControls();
+		if (paginationState.container !== container) {
+			if (paginationState.observer) paginationState.observer.disconnect();
+			paginationState.container = container;
+			paginationState.observer = new MutationObserver(() => {
+				paginationState.currentPage = 1;
+				applyPagination();
+			});
+			paginationState.observer.observe(container, { childList: true, subtree: true });
+		}
 	};
 })();
